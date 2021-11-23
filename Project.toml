@@ -5,7 +5,11 @@ version = "0.1.0"
 
 [deps]
 AWSS3 = "1c724243-ef5b-51ab-93f4-b0a88ac62a95"
+CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
+CSVFiles = "5d742f6a-9f54-50ce-8119-2520741973ca"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
+FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
 GZip = "92fee26a-97fe-5a0c-ad85-20a5f3185b63"
 Genie = "c43c736e-a2d1-11e8-161f-af95117fbd1e"
 Inflector = "6d011eab-0732-4556-8808-e463c76bf3b6"

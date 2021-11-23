@@ -42,5 +42,7 @@ Thumbs.db
 node_modules/
 
 # Ignore S3 data
-db/data/*.csv
 db/data/*.gz
+
+# Ignore CSV files
+db/seeds/*.csv
