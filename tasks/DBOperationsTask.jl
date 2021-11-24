@@ -2,9 +2,16 @@ module DBOperationsTask
 
 using SearchLight, SearchLightSQLite
 using CSV
+using Pkgrequests
 
 # function create db adapter dbsqlite
 # Genie.Generator.db_support(dbadapter = :SQLite)
+
+Base.convert(::Type{String}, _::Missing) = ""
+Base.convert(::Type{Int}, _::Missing) = 0
+Base.convert(::Type{Int}, s::String) = parse(Int, s)
+
+#
 
 function configure_and_connect()
   # Change configuration for SQLite use
@@ -30,10 +37,6 @@ function configure_and_connect()
   SearchLightSQLite.CONNECTIONS
 end
 
-function populating_data()
-
-end
-
 function create_table()
   # table functionality
   SearchLight.Migrations.create_migrations_table()
@@ -52,6 +55,24 @@ function run_migrations()
   SearchLight.Migrations.status()
 end
 
+function populating_data()
+  for row in CSV.Rows(joinpath("$(pwd())/db/data/", "package_requests_by_region_by_date.csv"))
+    m = Pkgrequest()
+
+    m.package_uuid = row.package_uuid
+    #m.status = row.status
+    m.client_type = row.client_type
+    #m.region = row.region
+    #m.date = row.date
+    #m.request_addrs = row.request_addrs
+    #m.request_count = row.request_count
+    #m.cache_misses = row.cache_misses
+    #m.body_bytes_sent = row.body_bytes_sent
+    #m.request_time = parse(String, row.request_time)
+
+    save(m)
+  end
+end
 
 """
 Create table, dump ddata, load data, drop table etc
@@ -65,7 +86,7 @@ function runtask()
 
   # generate resource
   #gen_resource()
-  
+  populating_data()
 end
 
 end
