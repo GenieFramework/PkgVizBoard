@@ -1,6 +1,4 @@
-env: ENV["GENIE_ENV"]
-
 dev:
   adapter: SQLite
-  database: db/pkgrequests.sqlite
+  database: db/stats.sqlite
   config:
