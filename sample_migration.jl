@@ -2,8 +2,6 @@ module CreateTablePkgreqs
 
 import SearchLight.Migrations: create_table, column, primary_key, add_index, drop_table
 
-import SearchLight.Migrations: create_table, column, primary_key, add_index, drop_table
-
 function up()
   create_table(:pkgreqs) do
     [
@@ -29,6 +27,9 @@ end
 function down()
   drop_table(:pkgreqs)
 end
+
+function dropcolumn()
+
 
 end
 
