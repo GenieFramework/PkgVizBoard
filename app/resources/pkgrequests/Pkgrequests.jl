@@ -9,6 +9,19 @@ export Pkgrequest
   id::DbId = DbId()
   package_uuid::String = ""
   status::Int = 0
+  region::String = ""
+  date::String = ""
+  request_count::Int = 0
+end
+
+end
+
+
+#=
+@kwdef mutable struct Pkgrequest <: AbstractModel
+  id::DbId = DbId()
+  package_uuid::String = ""
+  status::Int = 0
   client_type::String = ""
   region::String = ""
   date::String = ""
@@ -18,5 +31,4 @@ export Pkgrequest
   body_bytes_sent::Int = 0
   request_time::String = ""
 end
-
-end
+=#

@@ -1,1 +1,8 @@
-Day | Region | Package name
+Day | Region | Package UUID
+
+* Keep: package_uuid, status, region, date, request_count
+
+
+* drop client_type, request_addrs, cache_misses, body_bytes_sent, request_time
+
+keep 404s

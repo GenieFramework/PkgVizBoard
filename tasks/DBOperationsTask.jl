@@ -58,21 +58,47 @@ end
 function populating_data()
   for row in CSV.Rows(joinpath("$(pwd())/db/data/", "package_requests_by_region_by_date.csv"))
     m = Pkgrequest()
-
-    m.package_uuid = row.package_uuid
-    #m.status = row.status
-    m.client_type = row.client_type
-    #m.region = row.region
-    #m.date = row.date
-    #m.request_addrs = row.request_addrs
-    #m.request_count = row.request_count
-    #m.cache_misses = row.cache_misses
-    #m.body_bytes_sent = row.body_bytes_sent
-    #m.request_time = parse(String, row.request_time)
-
-    save(m)
+    
+    if(!ismissing(row.client_type) && row.client_type == "user")
+      m.package_uuid = row.package_uuid
+      m.status = parse(Int, row.status)
+      m.client_type = row.client_type
+      m.region = row.region
+      m.date = row.date
+      m.request_addrs = parse(Int, row.request_addrs)
+      m.request_count = parse(Int, row.request_count)
+      m.cache_misses = parse(Int, row.cache_misses)
+      m.body_bytes_sent = parse(Int, row.body_bytes_sent)
+      m.request_time = row.request_time
+      save(m)
+    end
   end
 end
+
+function drop_columns()
+  # BEGIN TRANSACTION;
+  # CREATE TEMPORARY TABLE pkgrequests_backup(id, package_uuid, status, region, date, request_count);
+  # INSERT INTO pkgrequests_backup SELECT id, package_uuid, status, region, date, request_count FROM pkgrequests;
+  # DROP TABLE pkgrequests;
+  # CREATE TABLE pkgrequests(id, package_uuid, status, region, date, request_count);
+  # INSERT INTO pkgrequests SELECT id, package_uuid, status, region, date, request_count FROM pkgrequests_backup;
+  # DROP TABLE pkgrequests_backup;
+  # COMMIT;
+end
+
+function select_genie_data(package_uuid)
+  # SELECT date, package_uuid, status, region, request_count from pkgrequests GROUP by id HAVING  status=200 AND package_uuid = "c43c736e-a2d1-11e8-161f-af95117fbd1e"
+end
+
+
+"""
+Total Genie requests with status 200: 498
+Total Genie requests with status 400: 532
+"""
+function find_total_requests(package_uuid)
+  # SELECT COUNT(request_count) from pkgrequests WHERE package_uuid = "c43c736e-a2d1-11e8-161f-af95117fbd1e"
+end
+
 
 """
 Create table, dump ddata, load data, drop table etc
