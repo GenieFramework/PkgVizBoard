@@ -6,3 +6,13 @@ Day | Region | Package UUID
 * drop client_type, request_addrs, cache_misses, body_bytes_sent, request_time
 
 keep 404s
+
+
+-----30NOV Adrian's feedback---
+1) push unzip to try catch failing 
+2) use unix time stamp for date
+3) writing model object should be inside if ...because object should not be created if not unused
+4) save should be create_or_update....
+5) more indexes region/package_uuid (date with can't use because no start and end)
+
+

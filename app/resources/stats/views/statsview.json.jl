@@ -1,0 +1,1 @@
+"Pkg Requests Data" => [Dict("package_uuid" => s.package_uuid, "region" => s.region) for s in stats]
