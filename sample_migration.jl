@@ -1,9 +1,9 @@
-module CreateTablePkgreqs
+module CreateTableStats
 
 import SearchLight.Migrations: create_table, column, primary_key, add_index, drop_table
 
 function up()
-  create_table(:pkgreqs) do
+  create_table(:stats) do
     [
       primary_key()
       column(:package_uuid, :string, limit = 100)
@@ -14,18 +14,15 @@ function up()
     ]
   end
 
-  add_index(:pkgreqs, :package_uuid)
+  add_index(:stats, :package_uuid)
+  add_index(:stats, :region)
 end
 
 function down()
-  drop_table(:pkgreqs)
+  drop_table(:stats)
 end
 
-function dropcolumn()
-
-
 end
-
 
 
 #"package_uuid","status","client_type","region","date",

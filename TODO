@@ -9,10 +9,10 @@ keep 404s
 
 
 -----30NOV Adrian's feedback---
-1) push unzip to try catch failing 
-2) use unix time stamp for date
-3) writing model object should be inside if ...because object should not be created if not unused
-4) save should be create_or_update....
-5) more indexes region/package_uuid (date with can't use because no start and end)
+1) push unzip to try catch failing            Y
+2) use unix time stamp for date              Y
+3) writing model object should be inside if ...because object should not be created if not unused       Y
+4) save should be create_or_update....     Y
+5) more indexes region/package_uuid (date with can't use because no start and end) Y
 
 

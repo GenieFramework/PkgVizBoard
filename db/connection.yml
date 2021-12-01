@@ -1,4 +1,4 @@
 dev:
   adapter: SQLite
-  database: db/stats.sqlite
+  database: db/dev.sqlite
   config:

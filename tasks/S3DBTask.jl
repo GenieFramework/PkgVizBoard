@@ -1,8 +1,8 @@
 module S3DBTask
 
 using Genie
-using GZip, CSV, CSVFiles, DataFrames
-using SearchLight, SearchLightSQLite, Stats
+using GZip, CSV, Dates
+using SearchLight, SearchLightSQLite, Stats, Packages
 
 const STATS_URL = "https://julialang-logs.s3.amazonaws.com/public_outputs/current/package_requests_by_region_by_date.csv.gz"
 const CSV_NAME = "package_requests_by_region_by_date.csv"
@@ -12,17 +12,20 @@ populate the database from CSV stats file
 """
 function dbdump(cachedir::String)
   for row in CSV.Rows(joinpath("$(cachedir)/", "$(CSV_NAME)"))
-    if(!ismissing(row.client_type) && row.client_type == "user")
+    if(!ismissing(row.client_type) && isnothing(findone(Package, uuid = "$(row.package_uuid)")) == false
+       && endswith(findone(Package, uuid = "$(row.package_uuid)").name, "_jll") == false && row.client_type == "user")
       m = Stat()
-
       m.package_uuid = row.package_uuid
+      m.package_name = findone(Package, uuid = "$(row.package_uuid)").name
       m.status = parse(Int, row.status)
       m.region = row.region
-      m.date = row.date
+      m.date = Date(row.date, dateformat"y-m-d")
       m.request_count = parse(Int, row.request_count)
 
-      # check if the stat already exist in the database
-      @info SearchLight.save(m) # update_by_or_create!!
+      #TODO: check if the stat already exist in the database
+      SearchLight.save(m) # save kept for testing purposes
+      # SearchLight.update_or_create(m, package_uuid = row.package_uuid, region = row.region, date = Date(row.date, dateformat"y-m-d"), )
+      # SearchLight.update_or_create(Package(uuid = uuid, name = pkginfo["name"]), uuid = uuid)
     end
   end
 end
