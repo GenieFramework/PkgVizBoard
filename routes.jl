@@ -31,12 +31,6 @@ Base.@kwdef mutable struct Model <: ReactiveModel
   filter_startdate::R{Date} = Dates.today() - Dates.Year(1)
   filter_enddate::R{Date} = Dates.today()
 
-  juliaversions::Vector{String} = String["1.0", "1.4", "1.5", "1.6", "1.7"]
-  filter_juliaversions::R{Vector{String}} = String[]
-
-  os::Vector{String} = String["Linux", "macOS", "Windows"]
-  filter_os::R{Vector{String}} = String[]
-
   regions::Vector{String} = String["Europe", "Asia", "North America", "South America", "Australia"]
   filter_regions::R{Vector{String}} = String[]
 
@@ -59,12 +53,6 @@ function handlers(model)
     @show val
   end
   on(model.filter_enddate) do val
-    @show val
-  end
-  on(model.filter_juliaversions) do val
-    @show val
-  end
-  on(model.filter_os) do val
     @show val
   end
   on(model.filter_regions) do val
@@ -95,6 +83,7 @@ function ui(model)
               textfield("Search for your favourite packages", :searchterms, clearable = true, filled = true)
             ])
           ])
+
           row([
 
             cell(class="rb", [
@@ -115,16 +104,6 @@ function ui(model)
                   ])
                 ])
               ])
-            ])
-
-            cell([
-              select(:filter_juliaversions, options = :juliaversions, multiple = true, clearable = true, filled = true, label = "Julia Version")
-            ])
-          ])
-
-          row([
-            cell(class="rb", [
-              select(:filter_os, options = :os, multiple = true, clearable = true, filled = true, label = "OS")
             ])
 
             cell([
