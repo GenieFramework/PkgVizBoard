@@ -22,7 +22,6 @@ function dbdump(cachedir::String)
       m.date = Date(row.date, dateformat"y-m-d")
       m.request_count = parse(Int, row.request_count)
 
-      #SearchLight.save(m) # save kept for testing purposes
       SearchLight.update_or_create(
         m, 
         package_uuid = row.package_uuid,
