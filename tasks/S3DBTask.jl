@@ -12,8 +12,8 @@ populate the database from CSV stats file
 """
 function dbdump(cachedir::String)
   for row in CSV.Rows(joinpath("$(cachedir)/", "$(CSV_NAME)"))
-    if(!ismissing(row.client_type) && isnothing(findone(Package, uuid = "$(row.package_uuid)")) == false
-       && endswith(findone(Package, uuid = "$(row.package_uuid)").name, "_jll") == false && row.client_type == "user")
+    if(!ismissing(row.client_type) && !isnothing(findone(Package, uuid = "$(row.package_uuid)"))
+       && !endswith(findone(Package, uuid = "$(row.package_uuid)").name, "_jll") && row.client_type == "user")
       m = Stat()
       m.package_uuid = row.package_uuid
       m.package_name = findone(Package, uuid = "$(row.package_uuid)").name
@@ -22,10 +22,14 @@ function dbdump(cachedir::String)
       m.date = Date(row.date, dateformat"y-m-d")
       m.request_count = parse(Int, row.request_count)
 
-      #TODO: check if the stat already exist in the database
-      SearchLight.save(m) # save kept for testing purposes
-      # SearchLight.update_or_create(m, package_uuid = row.package_uuid, region = row.region, date = Date(row.date, dateformat"y-m-d"), )
-      # SearchLight.update_or_create(Package(uuid = uuid, name = pkginfo["name"]), uuid = uuid)
+      #SearchLight.save(m) # save kept for testing purposes
+      SearchLight.update_or_create(
+        m, 
+        package_uuid = row.package_uuid,
+        region = row.region,
+        date = Date(row.date, dateformat"y-m-d"),
+        skip_update = true
+      )
     end
   end
 end
