@@ -1,6 +1,8 @@
 using Genie, Stipple, StippleUI, StipplePlotly
 import Dates
 
+using StatsController
+
 #=== config ==#
 
 for m in [Genie, Stipple, StippleUI, StipplePlotly]
@@ -11,11 +13,35 @@ end
 
 #== data ==#
 
-function plotdata(name)
+
+# x should be 
+
+
+function plotdata(data::Vector)
+  @info "data is: " data[1].package_name
+  # start date - end date 
+  # should go in x
+  # daily downloads request_count
+
+  # create a array of dictionary julia
+  # each dictionary should have a String and Int
+  
+
+  for d in data
+    d
+    
+
   PlotData(
-    x = ["Jan2019", "Feb2019", "Mar2019", "Apr2019", "May2019",
-          "Jun2019", "Jul2019", "Aug2019", "Sep2019", "Oct2019",
-          "Nov2019", "Dec2019"],
+    x = ["Sep2021", "Oct2021", "Nov2021"],
+    y = Int[rand(1:100_000) for x in 1:12],  # sum for month of sep, sum for month of october
+    plot = StipplePlotly.Charts.PLOT_TYPE_SCATTER,
+    name = data[1].package_name
+  )
+end
+
+function plotdata(name::String)
+  PlotData(
+    x = ["Sep2021", "Oct2021", "Nov2021"],
     y = Int[rand(1:100_000) for x in 1:12],
     plot = StipplePlotly.Charts.PLOT_TYPE_SCATTER,
     name = name
@@ -31,11 +57,13 @@ Base.@kwdef mutable struct Model <: ReactiveModel
   filter_startdate::R{Date} = Dates.today() - Dates.Year(1)
   filter_enddate::R{Date} = Dates.today()
 
-  regions::Vector{String} = String["Europe", "Asia", "North America", "South America", "Australia"]
+  regions::Vector{String} = String["au","cn-east","cn-northeast","cn-southeast","eu-central","in","kr","sa","sg","us-east","us-west"]
   filter_regions::R{Vector{String}} = String[]
 
   # plot
-  data::R{Vector{PlotData}} = [plotdata("Genie"), plotdata("Makie"), plotdata("Flux")]
+  data::R{Vector{PlotData}} = [plotdata("Genie")]
+  #data::R{Vector{PlotData}} = PlotData[]
+
   layout::R{PlotLayout} = PlotLayout(
       plot_bgcolor = "#fff",
       title = PlotLayoutTitle(text="Package downloads", font=Font(24))
@@ -48,6 +76,15 @@ end
 function handlers(model)
   on(model.searchterms) do val
     @show val
+    data = StatsController.search_by_package_name(val[1])
+    #model.data = [plotdata(data)]
+
+    @info model.data = [plotdata(data)]
+
+    @info data[1].package_name
+
+    @info "First Element" first(data)
+    @info "Last Element" last(data)
   end
   on(model.filter_startdate) do val
     @show val
@@ -57,6 +94,16 @@ function handlers(model)
   end
   on(model.filter_regions) do val
     @show val
+  end
+
+  onany(model.searchterms, model.filter_regions, model.filter_startdate, model.filter_enddate) do name, region, start_date, end_date
+    @show name, region, start_date, end_date
+    # (name, region, start_date, end_date) = (["Genie"], ["cn-east", "cn-northeast"], Date("2020-12-24"), Date("2021-12-16"))
+
+    objs = StatsController.search(name[1], region[1], start_date, end_date)
+    
+    plotdata(objs)
+
   end
 end
 
