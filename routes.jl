@@ -13,6 +13,18 @@ end
 
 #== data ==#
 
+function plotdata(name)
+  PlotData(
+    x = ["Jan2019", "Feb2019", "Mar2019", "Apr2019", "May2019",
+          "Jun2019", "Jul2019", "Aug2019", "Sep2019", "Oct2019",
+          "Nov2019", "Dec2019"],
+    y = Int[rand(1:100_000) for x in 1:12],
+    plot = StipplePlotly.Charts.PLOT_TYPE_SCATTER,
+    name = name
+  )
+end
+
+
 function plotdata(r_stats, pkg_names)
 
   all_stats = Dict[]
@@ -109,8 +121,10 @@ function handlers(model)
 
   onany(model.searchterms, model.filter_regions, model.filter_startdate, model.filter_enddate) do pkg_names, regions, start_date, end_date
     result_stats = StatsController.search(pkg_names, regions, start_date, end_date)
-    @info plotdata(result_stats, pkg_names)
+    model.data = [plotdata("Genie")]# [plotdata(result_stats, pkg_names)]
     
+    model.regions = ["in"]
+    @show model.data
   end
 end
 
@@ -162,6 +176,10 @@ function ui(model)
 
             cell([
               select(:filter_regions, options = :regions, multiple = true, clearable = true, filled = true, label = "Region")
+            ])
+
+            cell([
+              btn(color = "primary", label = "Search", @click("process = true"))
             ])
           ])
         ])
