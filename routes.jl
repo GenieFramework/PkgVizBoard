@@ -13,12 +13,10 @@ end
 
 #== data ==#
 
-function plotdata(name)
+function plotcomponent(x_val, y_val, name)
   PlotData(
-    x = ["Jan2019", "Feb2019", "Mar2019", "Apr2019", "May2019",
-          "Jun2019", "Jul2019", "Aug2019", "Sep2019", "Oct2019",
-          "Nov2019", "Dec2019"],
-    y = Int[rand(1:100_000) for x in 1:12],
+    x = x_val,
+    y = y_val,
     plot = StipplePlotly.Charts.PLOT_TYPE_SCATTER,
     name = name
   )
@@ -68,12 +66,7 @@ function plotdata(r_stats, pkg_names)
     @info typeof(x_val), typeof(y_val)
     @info size(x_val), size(y_val)
 
-    @info push!(my_data, PlotData(
-      x = x_val,
-      y = y_val,
-      plot = StipplePlotly.Charts.PLOT_TYPE_SCATTER,
-      name = pkg_name
-    ))
+    @info push!(my_data, plotcomponent(x_val, y_val, pkg_name))
   end
   
   @show "👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍" my_data
@@ -85,6 +78,7 @@ end
 #== reactive model ==#
 
 Base.@kwdef mutable struct Model <: ReactiveModel
+  process::R{Bool} = false
   # filter UI
   searchterms::R{Vector{String}} = String[]
 
@@ -95,7 +89,7 @@ Base.@kwdef mutable struct Model <: ReactiveModel
   filter_regions::R{Vector{String}} = String["in"]
 
   # data for plot
-  data::R{Vector{PlotData}} = [plotdata("Genie")]
+  data::R{Vector{PlotData}} = []
 
   layout::R{PlotLayout} = PlotLayout(
       plot_bgcolor = "#fff",
@@ -123,10 +117,17 @@ function handlers(model)
   onany(model.searchterms, model.filter_regions, model.filter_startdate, model.filter_enddate) do pkg_names, regions, start_date, end_date
     result_stats = StatsController.search(pkg_names, regions, start_date, end_date)
     model.data[] = plotdata(result_stats, pkg_names)
-    #@info model.data = [plotdata("Stipple"), plotdata("Genie")]
     @show model.data
     @show model.regions
   end
+
+  # on(model.process) do _
+  #   if (model.process[])
+  #     result_stats = StatsController.search(model.searchterms, model.filter_regions, model.filter_startdate, model.filter_enddate)
+  #     @info model.data[] = plotdata(result_stats, pkg_names)
+  #     model.process[] = false
+  #   end
+  # end
 end
 
 #== ui ==#
@@ -180,7 +181,7 @@ function ui(model)
             ])
 
             cell([
-              btn(color = "primary", label = "Search", @click("process = true"))
+              p(button("Search", @click("process = true")))
             ])
           ])
         ])
