@@ -9,7 +9,7 @@ for m in [Genie, Stipple, StippleUI, StipplePlotly]
   m.assets_config.host = "https://cdn.statically.io/gh/GenieFramework"
 end
 
-# WEB_TRANSPORT = Genie.WebChannels #Genie.WebThreads #
+#WEB_TRANSPORT = Genie.WebChannels #Genie.WebThreads #
 
 #== data ==#
 
@@ -45,10 +45,9 @@ function plotdata(r_stats, pkg_names)
   end
 
 
-  my_data = []
+  my_data = PlotData[]
 
   for (pkg_name, all_stat) in zip(pkg_names, all_stats)
-    @info pkg_name
 
     new_stat = sort(all_stat)
     @info typeof(new_stat)
@@ -65,11 +64,11 @@ function plotdata(r_stats, pkg_names)
     end
 
     @info "😋😋😋" x_val
-    @info "👍👍👍" y_val
+    @info "😋😋😋" y_val
     @info typeof(x_val), typeof(y_val)
     @info size(x_val), size(y_val)
 
-    push!(my_data, PlotData(
+    @info push!(my_data, PlotData(
       x = x_val,
       y = y_val,
       plot = StipplePlotly.Charts.PLOT_TYPE_SCATTER,
@@ -77,6 +76,9 @@ function plotdata(r_stats, pkg_names)
     ))
   end
   
+  @show "👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍" my_data
+  @show "👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍" typeof(my_data)
+
   return my_data
 end
 
@@ -92,9 +94,8 @@ Base.@kwdef mutable struct Model <: ReactiveModel
   regions::Vector{String} = String["au","cn-east","cn-northeast","cn-southeast","eu-central","in","kr","sa","sg","us-east","us-west"]
   filter_regions::R{Vector{String}} = String["in"]
 
-  # plot
-  data::R{Vector{PlotData}} = []
-  #data::R{Vector{PlotData}} = [plotdata("Genie")]
+  # data for plot
+  data::R{Vector{PlotData}} = [plotdata("Genie")]
 
   layout::R{PlotLayout} = PlotLayout(
       plot_bgcolor = "#fff",
@@ -121,10 +122,10 @@ function handlers(model)
 
   onany(model.searchterms, model.filter_regions, model.filter_startdate, model.filter_enddate) do pkg_names, regions, start_date, end_date
     result_stats = StatsController.search(pkg_names, regions, start_date, end_date)
-    model.data = [plotdata("Genie")]# [plotdata(result_stats, pkg_names)]
-    
-    model.regions = ["in"]
+    model.data[] = plotdata(result_stats, pkg_names)
+    #@info model.data = [plotdata("Stipple"), plotdata("Genie")]
     @show model.data
+    @show model.regions
   end
 end
 
