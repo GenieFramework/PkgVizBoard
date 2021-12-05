@@ -7,14 +7,16 @@ function search_by_package_name(pkg_name::String)
     SearchLight.find(Stat, package_name = pkg_name)
 end
 
-function search(pkg_name::String, region::String, startdate, enddate)
-    @info pkg_name, region, startdate, enddate
-    SearchLight.find(Stat, 
-    SQLWhereExpression("package_name = ? AND region = ? AND date BETWEEN ? and ?", 
-    pkg_name, 
-    region,
-    startdate,
-    enddate))
+function search(pkg_names, areas, startdate, enddate)
+    @info pkg_names, areas, startdate, enddate
+
+    SearchLight.find(Stat,
+        SQLWhereEntity[
+            SQLWhereExpression("package_name IN ( $(repeat("?,", length(pkg_names))[1:end-1] ) )", pkg_names),
+            SQLWhereExpression("region IN ( $(repeat("?,", length(areas))[1:end-1] ) )", areas),
+            SQLWhereExpression("date >= ? AND date <= ?", startdate, enddate)
+        ]
+    )
 end
 
 end

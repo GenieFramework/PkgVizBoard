@@ -13,39 +13,59 @@ end
 
 #== data ==#
 
+function plotdata(r_stats, pkg_names)
 
-# x should be 
+  all_stats = Dict[]
+  for pkg_name in pkg_names
+
+    xy_val = Dict{Date, Int}()
+
+    for r_stat in r_stats                                                 # n^2 complexity clean it
+      if r_stat.package_name == pkg_name
+        if haskey(xy_val, r_stat.date)
+          xy_val[r_stat.date] = xy_val[r_stat.date] + r_stat.request_count
+        else
+          xy_val[r_stat.date] = r_stat.request_count
+        end
+      end
+    end
+    push!(all_stats, xy_val)
+  end
 
 
-function plotdata(data::Vector)
-  @info "data is: " data[1].package_name
-  # start date - end date 
-  # should go in x
-  # daily downloads request_count
+  my_data = []
 
-  # create a array of dictionary julia
-  # each dictionary should have a String and Int
+  for (pkg_name, all_stat) in zip(pkg_names, all_stats)
+    @info pkg_name
+
+    new_stat = sort(all_stat)
+    @info typeof(new_stat)
+
+    x_val = String[]
+    for key in keys(new_stat)                                             # n^2 complexity clean it
+      push!(x_val, Dates.format(key, "yyyy-mm-dd"))
+    end
+
+    y_val = Int64[]
+
+    for val in values(new_stat)
+      push!(y_val, val)
+    end
+
+    @info "😋😋😋" x_val
+    @info "👍👍👍" y_val
+    @info typeof(x_val), typeof(y_val)
+    @info size(x_val), size(y_val)
+
+    push!(my_data, PlotData(
+      x = x_val,
+      y = y_val,
+      plot = StipplePlotly.Charts.PLOT_TYPE_SCATTER,
+      name = pkg_name
+    ))
+  end
   
-
-  for d in data
-    d
-    
-
-  PlotData(
-    x = ["Sep2021", "Oct2021", "Nov2021"],
-    y = Int[rand(1:100_000) for x in 1:12],  # sum for month of sep, sum for month of october
-    plot = StipplePlotly.Charts.PLOT_TYPE_SCATTER,
-    name = data[1].package_name
-  )
-end
-
-function plotdata(name::String)
-  PlotData(
-    x = ["Sep2021", "Oct2021", "Nov2021"],
-    y = Int[rand(1:100_000) for x in 1:12],
-    plot = StipplePlotly.Charts.PLOT_TYPE_SCATTER,
-    name = name
-  )
+  return my_data
 end
 
 #== reactive model ==#
@@ -54,15 +74,15 @@ Base.@kwdef mutable struct Model <: ReactiveModel
   # filter UI
   searchterms::R{Vector{String}} = String[]
 
-  filter_startdate::R{Date} = Dates.today() - Dates.Year(1)
-  filter_enddate::R{Date} = Dates.today()
+  filter_startdate::R{Date} = Dates.today() - Dates.Month(3)
+  filter_enddate::R{Date} = Dates.today() - Dates.Month(1)
 
   regions::Vector{String} = String["au","cn-east","cn-northeast","cn-southeast","eu-central","in","kr","sa","sg","us-east","us-west"]
-  filter_regions::R{Vector{String}} = String[]
+  filter_regions::R{Vector{String}} = String["in"]
 
   # plot
-  data::R{Vector{PlotData}} = [plotdata("Genie")]
-  #data::R{Vector{PlotData}} = PlotData[]
+  data::R{Vector{PlotData}} = []
+  #data::R{Vector{PlotData}} = [plotdata("Genie")]
 
   layout::R{PlotLayout} = PlotLayout(
       plot_bgcolor = "#fff",
@@ -76,15 +96,6 @@ end
 function handlers(model)
   on(model.searchterms) do val
     @show val
-    data = StatsController.search_by_package_name(val[1])
-    #model.data = [plotdata(data)]
-
-    @info model.data = [plotdata(data)]
-
-    @info data[1].package_name
-
-    @info "First Element" first(data)
-    @info "Last Element" last(data)
   end
   on(model.filter_startdate) do val
     @show val
@@ -96,14 +107,10 @@ function handlers(model)
     @show val
   end
 
-  onany(model.searchterms, model.filter_regions, model.filter_startdate, model.filter_enddate) do name, region, start_date, end_date
-    @show name, region, start_date, end_date
-    # (name, region, start_date, end_date) = (["Genie"], ["cn-east", "cn-northeast"], Date("2020-12-24"), Date("2021-12-16"))
-
-    objs = StatsController.search(name[1], region[1], start_date, end_date)
+  onany(model.searchterms, model.filter_regions, model.filter_startdate, model.filter_enddate) do pkg_names, regions, start_date, end_date
+    result_stats = StatsController.search(pkg_names, regions, start_date, end_date)
+    @info plotdata(result_stats, pkg_names)
     
-    plotdata(objs)
-
   end
 end
 
