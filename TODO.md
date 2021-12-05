@@ -29,3 +29,11 @@ keep 404s
 
 1) Style it | Branding (CSS)
 2) Try Julia version also. Insert to table [see how you can figure that out] or talk to Stefan
+
+
+
+# know issues
+
+1) Append to DB instead of insertion
+2) Update on Button Click
+3) Doesn't take mulitiple package names
