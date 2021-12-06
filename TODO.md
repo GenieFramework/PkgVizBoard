@@ -32,7 +32,6 @@ keep 404s
 2) Try Julia version also. Insert to table [see how you can figure that out] or talk to Stefan
 
 
-
 # know issues
 
 1) Append to DB instead of insertion :TODO
@@ -47,3 +46,26 @@ keep 404s
 
 
 # Interation 2 mapbox integration maybe. Talk to Adrian. Maps :() are fun
+
+
+# TODO adrian
+1) Unique index on UUID, region and date
+2) add index to date
+
+
+3) Read row...get the new date
+
+4) show all regions in dropdown
+5) change the algorithm
+
+6) append CSV 
+https://docs.juliahub.com/CSV/HHBkp/0.9.11/reading.html#CSV.Rows
+
+https://v1.quasar.dev/vue-components/select#qselect-api
+
+
+for all
+
+use display value property 
+
+selection > display 

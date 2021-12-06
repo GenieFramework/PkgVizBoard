@@ -20,7 +20,7 @@ function plotcomponent(x_val, y_val, name)
   )
 end
 
-function insertplotdata(r_stats, pkg_names)
+function insert_plot_data(r_stats, pkg_names)
   squashed_stats = Dict[]
   
   # squasing multiple regions record in one row
@@ -105,7 +105,7 @@ function handlers(model)
     if (model.process[])
       pkgnames::Vector{String} = split((model.searchterms)[1], ", ")
       result_stats = StatsController.search(pkgnames, model.filter_regions[], model.filter_startdate[], model.filter_enddate[])
-      model.data[] = insertplotdata(result_stats, pkgnames)
+      model.data[] = insert_plot_data(result_stats, pkgnames)
       model.process[] = false
     end
   end
