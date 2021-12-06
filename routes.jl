@@ -21,11 +21,11 @@ function plotcomponent(x_val, y_val, name)
 end
 
 function insertplotdata(r_stats, pkg_names)
-  all_stats = Dict[]
+  squashed_stats = Dict[]
+  
+  # squasing multiple regions record in one row
   for pkg_name in pkg_names
-
     xy_val = Dict{Date, Int}()
-
     for r_stat in r_stats                                                 #TODO: n^2 complexity clean it
       if r_stat.package_name == pkg_name
         if haskey(xy_val, r_stat.date)
@@ -35,32 +35,30 @@ function insertplotdata(r_stats, pkg_names)
         end
       end
     end
-    push!(all_stats, xy_val)
+    push!(squashed_stats, xy_val)
   end
 
-  #TODO: name is not nice. Use type for easy debugging
-  my_data = PlotData[]
+  plot_component_data::Vector{PlotData} = PlotData[]
 
-  for (pkg_name, all_stat) in zip(pkg_names, all_stats)
-    new_stat = sort(all_stat)
-    
-    #TODO: single line assigment
-    x_val = String[]
-    y_val = Int64[]
+  # format data for plot
+  for (pkg_name, all_stat) in zip(pkg_names, squashed_stats)
+    sorted_stat = sort(all_stat)
+
+    x_val, y_val = String[], Int64[]
      
     #TODO: make these two loops into one
-    for key in keys(new_stat)                                             #TODO: n^2 complexity clean it
+    for key in keys(sorted_stat)                                             #TODO: n^2 complexity clean it
       push!(x_val, Dates.format(key, "yyyy-mm-dd"))
     end
     
-    for val in values(new_stat)
+    for val in values(sorted_stat)
       push!(y_val, val)
     end
 
-    @info push!(my_data, plotcomponent(x_val, y_val, pkg_name))
+    push!(plot_component_data, plotcomponent(x_val, y_val, pkg_name))
   end
 
-  return my_data
+  return plot_component_data
 end
 
 #== reactive model ==#
