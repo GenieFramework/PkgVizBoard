@@ -24,6 +24,8 @@ end
 
 
 function plotdata(r_stats, pkg_names)
+  
+  @show "😋😋😋👍👍👍👍👍" r_stats
 
   all_stats = Dict[]
   for pkg_name in pkg_names
@@ -44,6 +46,7 @@ function plotdata(r_stats, pkg_names)
 
 
   my_data = PlotData[]
+
 
   for (pkg_name, all_stat) in zip(pkg_names, all_stats)
 
@@ -101,7 +104,7 @@ end
 #== handlers ==#
 
 function handlers(model)
-  on(model.searchterms) do val
+  on(model.searchterms) do val    
     @show val
   end
   on(model.filter_startdate) do val
@@ -114,20 +117,31 @@ function handlers(model)
     @show val
   end
 
-  onany(model.searchterms, model.filter_regions, model.filter_startdate, model.filter_enddate) do pkg_names, regions, start_date, end_date
-    result_stats = StatsController.search(pkg_names, regions, start_date, end_date)
-    model.data[] = plotdata(result_stats, pkg_names)
-    @show model.data
-    @show model.regions
-  end
-
-  # on(model.process) do _
-  #   if (model.process[])
-  #     result_stats = StatsController.search(model.searchterms, model.filter_regions, model.filter_startdate, model.filter_enddate)
-  #     @info model.data[] = plotdata(result_stats, pkg_names)
-  #     model.process[] = false
-  #   end
+  # onany(model.searchterms, model.filter_regions, model.filter_startdate, model.filter_enddate) do pkg_names, regions, start_date, end_date
+  #   temp::Vector{String} = split((model.searchterms)[1], ", ")
+  #   @show temp
+  #   result_stats = StatsController.search(temp, regions, start_date, end_date)
+  #   @show result_stats
+  #   model.data[] = plotdata(result_stats, temp)
+  #   @show model.data
+  #   @show model.regions
   # end
+
+  on(model.process) do _
+    if (model.process[])
+      temp::Vector{String} = split((model.searchterms)[1], ", ")
+      regions = model.filter_regions[]
+      start_date = model.filter_startdate[]
+      end_date = model.filter_enddate[]
+      @show "+++++++++++++++++++++++++" temp, regions, start_date, end_date
+
+      result_stats = StatsController.search(temp, model.filter_regions[], model.filter_startdate[], model.filter_enddate[])
+
+      @show result_stats
+      model.data[] = plotdata(result_stats, temp)
+      model.process[] = false
+    end
+  end
 end
 
 #== ui ==#
@@ -150,7 +164,7 @@ function ui(model)
 
           row([
             cell([
-              textfield("Search for your favourite packages", :searchterms, clearable = true, filled = true)
+              textfield("Search for your favourite packages (Hit enter to search)", :searchterms, clearable = true, filled = true)
             ])
           ])
 
@@ -181,7 +195,11 @@ function ui(model)
             ])
 
             cell([
-              p(button("Search", @click("process = true")))
+              btn("save", type = "submit", loading = :submitting, class = "q-mt-md", color = "teal", @click("process = true"), [
+                template("", "v-slot:loading", [
+                  spinner(:facebook, wrap = StippleUI.NO_WRAPPER)
+                  ])
+              ])
             ])
           ])
         ])

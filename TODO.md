@@ -34,6 +34,6 @@ keep 404s
 
 # know issues
 
-1) Append to DB instead of insertion
-2) Update on Button Click
-3) Doesn't take mulitiple package names
+1) Append to DB instead of insertion :TODO
+2) Update on Button Click   [X] FIXED
+3) Doesn't take mulitiple package names [X] FIXED
