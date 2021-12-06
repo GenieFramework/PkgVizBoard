@@ -9,9 +9,7 @@ for m in [Genie, Stipple, StippleUI, StipplePlotly]
   m.assets_config.host = "https://cdn.statically.io/gh/GenieFramework"
 end
 
-#WEB_TRANSPORT = Genie.WebChannels #Genie.WebThreads #
-
-#== data ==#
+#== plot data logic ==#
 
 function plotcomponent(x_val, y_val, name)
   PlotData(
@@ -22,17 +20,13 @@ function plotcomponent(x_val, y_val, name)
   )
 end
 
-
-function plotdata(r_stats, pkg_names)
-  
-  @show "😋😋😋👍👍👍👍👍" r_stats
-
+function insertplotdata(r_stats, pkg_names)
   all_stats = Dict[]
   for pkg_name in pkg_names
 
     xy_val = Dict{Date, Int}()
 
-    for r_stat in r_stats                                                 # n^2 complexity clean it
+    for r_stat in r_stats                                                 #TODO: n^2 complexity clean it
       if r_stat.package_name == pkg_name
         if haskey(xy_val, r_stat.date)
           xy_val[r_stat.date] = xy_val[r_stat.date] + r_stat.request_count
@@ -44,36 +38,27 @@ function plotdata(r_stats, pkg_names)
     push!(all_stats, xy_val)
   end
 
-
+  #TODO: name is not nice. Use type for easy debugging
   my_data = PlotData[]
 
-
   for (pkg_name, all_stat) in zip(pkg_names, all_stats)
-
     new_stat = sort(all_stat)
-    @info typeof(new_stat)
-
+    
+    #TODO: single line assigment
     x_val = String[]
-    for key in keys(new_stat)                                             # n^2 complexity clean it
+    y_val = Int64[]
+     
+    #TODO: make these two loops into one
+    for key in keys(new_stat)                                             #TODO: n^2 complexity clean it
       push!(x_val, Dates.format(key, "yyyy-mm-dd"))
     end
-
-    y_val = Int64[]
-
+    
     for val in values(new_stat)
       push!(y_val, val)
     end
 
-    @info "😋😋😋" x_val
-    @info "😋😋😋" y_val
-    @info typeof(x_val), typeof(y_val)
-    @info size(x_val), size(y_val)
-
     @info push!(my_data, plotcomponent(x_val, y_val, pkg_name))
   end
-  
-  @show "👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍" my_data
-  @show "👍👍👍👍👍👍👍👍👍👍👍👍👍👍👍" typeof(my_data)
 
   return my_data
 end
@@ -88,6 +73,8 @@ Base.@kwdef mutable struct Model <: ReactiveModel
   filter_startdate::R{Date} = Dates.today() - Dates.Month(3)
   filter_enddate::R{Date} = Dates.today() - Dates.Month(1)
 
+  #TODO: ask adrian about this. Save database lookup time
+  # but also if new region is added make sure to update this
   regions::Vector{String} = String["au","cn-east","cn-northeast","cn-southeast","eu-central","in","kr","sa","sg","us-east","us-west"]
   filter_regions::R{Vector{String}} = String["in"]
 
@@ -104,41 +91,23 @@ end
 #== handlers ==#
 
 function handlers(model)
-  on(model.searchterms) do val    
-    @show val
+  on(model.searchterms) do searchitems   
+    @show searchitems
   end
-  on(model.filter_startdate) do val
-    @show val
+  on(model.filter_startdate) do startdate
+    @show startdate
   end
-  on(model.filter_enddate) do val
-    @show val
+  on(model.filter_enddate) do enddate
+    @show enddate
   end
-  on(model.filter_regions) do val
-    @show val
+  on(model.filter_regions) do areas
+    @show areas
   end
-
-  # onany(model.searchterms, model.filter_regions, model.filter_startdate, model.filter_enddate) do pkg_names, regions, start_date, end_date
-  #   temp::Vector{String} = split((model.searchterms)[1], ", ")
-  #   @show temp
-  #   result_stats = StatsController.search(temp, regions, start_date, end_date)
-  #   @show result_stats
-  #   model.data[] = plotdata(result_stats, temp)
-  #   @show model.data
-  #   @show model.regions
-  # end
-
   on(model.process) do _
     if (model.process[])
-      temp::Vector{String} = split((model.searchterms)[1], ", ")
-      regions = model.filter_regions[]
-      start_date = model.filter_startdate[]
-      end_date = model.filter_enddate[]
-      @show "+++++++++++++++++++++++++" temp, regions, start_date, end_date
-
-      result_stats = StatsController.search(temp, model.filter_regions[], model.filter_startdate[], model.filter_enddate[])
-
-      @show result_stats
-      model.data[] = plotdata(result_stats, temp)
+      pkgnames::Vector{String} = split((model.searchterms)[1], ", ")
+      result_stats = StatsController.search(pkgnames, model.filter_regions[], model.filter_startdate[], model.filter_enddate[])
+      model.data[] = insertplotdata(result_stats, pkgnames)
       model.process[] = false
     end
   end
@@ -195,7 +164,7 @@ function ui(model)
             ])
 
             cell([
-              btn("save", type = "submit", loading = :submitting, class = "q-mt-md", color = "teal", @click("process = true"), [
+              btn("Visualize", type = "submit", loading = :submitting, class = "q-mt-md", color = "teal", @click("process = true"), [
                 template("", "v-slot:loading", [
                   spinner(:facebook, wrap = StippleUI.NO_WRAPPER)
                   ])

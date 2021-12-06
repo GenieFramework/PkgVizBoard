@@ -23,7 +23,8 @@ keep 404s
 3) Add a button (on button click so something)
 4) Plot should have matching day - request_count
 5) Fix re-inserting bug backend
-
+6) Make the Search Button DISABLED by default if searchtext is empty
+7) Disable all the dates in calendar if not present in database
 
 ### Advance TODO
 
@@ -37,3 +38,8 @@ keep 404s
 1) Append to DB instead of insertion :TODO
 2) Update on Button Click   [X] FIXED
 3) Doesn't take mulitiple package names [X] FIXED
+4) Pick same date | Pick wrong (that don't exist in DB) - check for behaviour
+5) Click on search with empty search text - no results
+
+
+# Finish all TODO Cleanup from CODE
