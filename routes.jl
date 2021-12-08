@@ -49,13 +49,14 @@ function insert_plot_data(r_stats)
 
     push!(plot_component_data, plotcomponent(x_val, y_val, pkg_name))
   end
-
+  
   return plot_component_data
 end
 
 #== reactive model ==#
 
 Base.@kwdef mutable struct Model <: ReactiveModel
+  db_lookup::R{Bool} = false
   process::R{Bool} = false
   # filter UI
   searchterms::R{Vector{String}} = String[]
@@ -95,13 +96,14 @@ function handlers(model)
     if model.process[]
       model.process[] = false
       @info "Calculating..."
-      if size(model.searchterms[]) > (0,) && size(model.filter_regions[]) > (0,)
+      if size(model.searchterms[]) > (0,) && size(model.filter_regions[]) > (0,) && !model.db_lookup[] 
         @info "Inner Loop running..."
         @info model.filter_startdate[]
+        model.db_lookup[] = true
         pkgnames::Vector{String} = split((model.searchterms)[1], ", ")
         result_stats = StatsController.search(pkgnames, model.filter_regions[], model.filter_startdate[], model.filter_enddate[])
         model.data[] = insert_plot_data(result_stats)
-        model.process[] = false
+        model.db_lookup[] = false
       end
     end
   end
