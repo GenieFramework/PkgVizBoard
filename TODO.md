@@ -49,7 +49,7 @@ keep 404s
 
 
 # TODO adrian
-1) Unique index on UUID, region and date
+1) Unique index on UUID, region and date [X]
 2) add index to date
 
 

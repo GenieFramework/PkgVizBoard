@@ -1,5 +1,5 @@
 using Genie, Stipple, StippleUI, StipplePlotly
-import Dates
+import Dates, OrderedCollections
 
 using StatsController
 
@@ -20,39 +20,31 @@ function plotcomponent(x_val, y_val, name)
   )
 end
 
-function insert_plot_data(r_stats, pkg_names)
-  squashed_stats = Dict[]
+function insert_plot_data(r_stats)
   
-  # squasing multiple regions record in one row
-  for pkg_name in pkg_names
-    xy_val = Dict{Date, Int}()
-    for r_stat in r_stats                                                 #TODO: n^2 complexity clean it
-      if r_stat.package_name == pkg_name
-        if haskey(xy_val, r_stat.date)
-          xy_val[r_stat.date] = xy_val[r_stat.date] + r_stat.request_count
-        else
-          xy_val[r_stat.date] = r_stat.request_count
-        end
-      end
+  stats = Dict{String, Dict{Date, Int64}}()
+
+  for r_stat in r_stats
+    haskey(stats, r_stat.package_name) || (stats[r_stat.package_name] = Dict{Date, Int}())
+    current_pkg_stats = stats[r_stat.package_name]
+    if haskey(current_pkg_stats, r_stat.date)
+      current_pkg_stats[r_stat.date] += r_stat.request_count
+    else
+      current_pkg_stats[r_stat.date] = r_stat.request_count
     end
-    push!(squashed_stats, xy_val)
+    stats[r_stat.package_name] = current_pkg_stats
   end
 
   plot_component_data::Vector{PlotData} = PlotData[]
 
-  # format data for plot
-  for (pkg_name, all_stat) in zip(pkg_names, squashed_stats)
-    sorted_stat = sort(all_stat)
-
+  for (pkg_name, pkg_data) in stats
+    @info typeof(pkg_data)
     x_val, y_val = String[], Int64[]
-     
-    #TODO: make these two loops into one
-    for key in keys(sorted_stat)                                             #TODO: n^2 complexity clean it
-      push!(x_val, Dates.format(key, "yyyy-mm-dd"))
-    end
-    
-    for val in values(sorted_stat)
-      push!(y_val, val)
+    sorted_pkg_data = sort(pkg_data)
+
+    for(download_date, req_count) in sorted_pkg_data
+      push!(x_val, Dates.format(download_date, "yyyy-mm-dd"))
+      push!(y_val, req_count)
     end
 
     push!(plot_component_data, plotcomponent(x_val, y_val, pkg_name))
@@ -71,10 +63,8 @@ Base.@kwdef mutable struct Model <: ReactiveModel
   filter_startdate::R{Date} = Dates.today() - Dates.Month(3)
   filter_enddate::R{Date} = Dates.today() - Dates.Month(1)
 
-  #TODO: ask adrian about this. Save database lookup time
-  # but also if new region is added make sure to update this
-  regions::Vector{String} = String["au","cn-east","cn-northeast","cn-southeast","eu-central","in","kr","sa","sg","us-east","us-west"]
-  filter_regions::R{Vector{String}} = String["in"]
+  regions::Vector{String} = String["all", "au","cn-east","cn-northeast","cn-southeast","eu-central","in","kr","sa","sg","us-east","us-west"]
+  filter_regions::R{Vector{String}} = String["all"]
 
   # data for plot
   data::R{Vector{PlotData}} = []
@@ -105,7 +95,7 @@ function handlers(model)
     if (model.process[])
       pkgnames::Vector{String} = split((model.searchterms)[1], ", ")
       result_stats = StatsController.search(pkgnames, model.filter_regions[], model.filter_startdate[], model.filter_enddate[])
-      model.data[] = insert_plot_data(result_stats, pkgnames)
+      model.data[] = insert_plot_data(result_stats)
       model.process[] = false
     end
   end
