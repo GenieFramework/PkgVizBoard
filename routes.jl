@@ -55,8 +55,7 @@ end
 
 #== reactive model ==#
 
-Base.@kwdef mutable struct Model <: ReactiveModel
-  db_lookup::R{Bool} = false
+@reactive! mutable struct Model <: ReactiveModel
   process::R{Bool} = false
   # filter UI
   searchterms::R{Vector{String}} = String[]
@@ -93,19 +92,12 @@ function handlers(model)
     @show areas
   end
   on(model.process) do _
-    if model.process[]
-      model.process[] = false
-      @info "Calculating..."
-      if size(model.searchterms[]) > (0,) && size(model.filter_regions[]) > (0,) && !model.db_lookup[] 
-        @info "Inner Loop running..."
-        @info model.filter_startdate[]
-        model.db_lookup[] = true
-        pkgnames::Vector{String} = split((model.searchterms)[1], ", ")
-        result_stats = StatsController.search(pkgnames, model.filter_regions[], model.filter_startdate[], model.filter_enddate[])
-        model.data[] = insert_plot_data(result_stats)
-        model.db_lookup[] = false
-      end
-    end
+    model.process[] || return
+    (!isempty(model.searchterms[]) && !isempty(model.filter_regions[])) || return
+    pkgnames::Vector{String} = split((model.searchterms)[1], ", ")
+    result_stats = StatsController.search(pkgnames, model.filter_regions[], model.filter_startdate[], model.filter_enddate[])
+    model.data[] = insert_plot_data(result_stats)
+    model.process[] = false
   end
 end
 
@@ -165,7 +157,7 @@ function ui(model)
             ])
 
             cell([
-              btn("Visualize", type = "submit", loading = :submitting, class = "q-mt-md", color = "teal", @click("process = true"), [
+              btn("Visualize", type = "submit", loading = :process, class = "q-mt-md", color = "teal", @click("process = true"), [
                 template("", "v-slot:loading", [
                   spinner(:facebook, wrap = StippleUI.NO_WRAPPER)
                   ])

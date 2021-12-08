@@ -86,3 +86,8 @@ remaining
 backlog
 - add date as ID. But it will take lot of time. it would block my work. So I kept it for one of the nigh task
   Like I'll drop the db and re-run migration
+
+
+  # remove format 
+  # union of ismissing or date
+## put it in return type of the function 

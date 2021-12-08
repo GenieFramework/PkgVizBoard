@@ -11,18 +11,18 @@ const CSV_NAME = "package_requests_by_region_by_date.csv"
 return max date that exists in database
 """
 function maxdate()
-  maxdate_db = first(SearchLight.query("SELECT MAX(date) AS MaxDate from Stats").MaxDate)
-  return maxdate_db
+  maxdate_db = first(SearchLight.query("SELECT MAX(date) AS MaxDate from stats").MaxDate)
+  return ismissing(maxdate_db) ? Dates.today() : Date(maxdate_db)
 end
 
 """
 populate the database from CSV stats file
 """
 function dbdump(cachedir::String)
-  max_date_in_db = ismissing(maxdate()) ? Dates.today() - Dates.Month(12) : Date(maxdate(), dateformat"y-m-d")
+  max_date_in_db = maxdate()
   
   for row in CSV.Rows(joinpath("$(cachedir)/", "$(CSV_NAME)"))
-    if(Date(row.date, dateformat"y-m-d") > max_date_in_db)
+    if(Date(row.date) > max_date_in_db)
       if(!ismissing(row.client_type) && !isnothing(findone(Package, uuid = "$(row.package_uuid)"))
         && !endswith(findone(Package, uuid = "$(row.package_uuid)").name, "_jll") && row.client_type == "user")
         m = Stat()
@@ -30,14 +30,14 @@ function dbdump(cachedir::String)
         m.package_name = findone(Package, uuid = "$(row.package_uuid)").name
         m.status = parse(Int, row.status)
         m.region = row.region
-        m.date = Date(row.date, dateformat"y-m-d")
+        m.date = Date(row.date)
         m.request_count = parse(Int, row.request_count)
 
         SearchLight.update_or_create(
           m, 
           package_uuid = row.package_uuid,
           region = row.region,
-          date = Date(row.date, dateformat"y-m-d"),
+          date = Date(row.date),
           skip_update = true
         )
       end

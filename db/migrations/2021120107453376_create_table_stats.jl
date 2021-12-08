@@ -18,6 +18,7 @@ function up()
   add_index(:stats, :package_uuid)
   add_index(:stats, :package_name)
   add_index(:stats, :region)
+  add_index(:stats, :date)
 end
 
 function down()
