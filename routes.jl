@@ -130,8 +130,8 @@ function ui(model)
             cell(class="rb", [
               textfield("Start date", :filter_startdate, clearable = true, filled = true, [
                 icon(name="event", class="cursor-pointer", [
-                  popup_proxy(cover = true, transitionshow="scale", transitionhide="scale", [
-                    datepicker(:filter_startdate, mask = "YYYY-MM-DD")
+                  popup_proxy(cover = true, transitionshow="scale", transition__hide="scale", [
+                    datepicker(:filter_startdate, mask = "YYYY-MM-DD", navigation__min__year__month="2021/09", navigation__max__year__month="2021/12")
                   ])
                 ])
               ])
@@ -141,14 +141,16 @@ function ui(model)
               textfield("End date", :filter_enddate, clearable = true, filled = true, [
                 icon(name="event", class="cursor-pointer", [
                   popup_proxy(ref="qDateProxy", cover = true, transitionshow="scale", transitionhide="scale", [
-                    datepicker(:filter_enddate, mask = "YYYY-MM-DD")
+                    datepicker(:filter_enddate, mask = "YYYY-MM-DD", navigation__min__year__month="2021/09", navigation__max__year__month="2021/12")
                   ])
                 ])
               ])
             ])
 
             cell([
-              select(:filter_regions, options = :regions, multiple = true, clearable = true, filled = true, label = "Region")
+              select(:filter_regions, options = :regions, multiple = true, clearable = true,
+               filled = true, label = "Region", display__value = "all", use__chips = true,
+               rules="[ val => val && val.length > 0 || 'Please select atleast one region']")
             ])
 
             cell([
