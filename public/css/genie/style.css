@@ -21,6 +21,10 @@ a:hover, a:focus, a:active, a:visited {
     text-decoration: none;
 }
 
+q-btn{
+    margin-left: 100px;
+}
+
 /* Buttons override */
 .btn {
 	text-transform: uppercase;

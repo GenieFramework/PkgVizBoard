@@ -69,3 +69,20 @@ for all
 use display value property 
 
 selection > display 
+
+
+Disable button
+----
+if search has changed && previous operation has finished
+
+
+
+remaining 
+1) stop user from spamming visualization
+2) css to add margin left
+3) make the calender icon big
+4) Check if stats exists then only get max of table otherwise just insert
+
+backlog
+- add date as ID. But it will take lot of time. it would block my work. So I kept it for one of the nigh task
+  Like I'll drop the db and re-run migration

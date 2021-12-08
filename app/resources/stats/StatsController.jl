@@ -7,7 +7,7 @@ using Genie.Renderer.Html, Genie.Renderer.Json, SearchLight, Stats
 # that package instead of pulling all the data again for all packages
 function search(pkg_names, areas, startdate, enddate)
 
-    if first(pkg_names) != ""
+    if first(pkg_names) != "" && size(areas) > (0,)
         if "all" in areas
             SearchLight.find(Stat,
                 SQLWhereEntity[

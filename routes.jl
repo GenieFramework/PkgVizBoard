@@ -92,11 +92,17 @@ function handlers(model)
     @show areas
   end
   on(model.process) do _
-    if (model.process[])
-      pkgnames::Vector{String} = split((model.searchterms)[1], ", ")
-      result_stats = StatsController.search(pkgnames, model.filter_regions[], model.filter_startdate[], model.filter_enddate[])
-      model.data[] = insert_plot_data(result_stats)
+    if model.process[]
       model.process[] = false
+      @info "Calculating..."
+      if size(model.searchterms[]) > (0,) && size(model.filter_regions[]) > (0,)
+        @info "Inner Loop running..."
+        @info model.filter_startdate[]
+        pkgnames::Vector{String} = split((model.searchterms)[1], ", ")
+        result_stats = StatsController.search(pkgnames, model.filter_regions[], model.filter_startdate[], model.filter_enddate[])
+        model.data[] = insert_plot_data(result_stats)
+        model.process[] = false
+      end
     end
   end
 end
@@ -109,6 +115,9 @@ function ui(model)
     <style>
       .rb {
         border-right: 10pt solid #fff;
+      },
+      .q-mt-md {
+        margin-left: 50px;
       }
     </style>
     """,
@@ -141,7 +150,7 @@ function ui(model)
               textfield("End date", :filter_enddate, clearable = true, filled = true, [
                 icon(name="event", class="cursor-pointer", [
                   popup_proxy(ref="qDateProxy", cover = true, transitionshow="scale", transitionhide="scale", [
-                    datepicker(:filter_enddate, mask = "YYYY-MM-DD", navigation__min__year__month="2021/09", navigation__max__year__month="2021/12")
+                    datepicker(:filter_enddate, mask = "YYYY-MM-DD", navigation__min__year__month="2021/09")
                   ])
                 ])
               ])
