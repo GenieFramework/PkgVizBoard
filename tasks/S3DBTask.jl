@@ -12,15 +12,15 @@ return max date that exists in database
 """
 function maxdate()
   maxdate_db = first(SearchLight.query("SELECT MAX(date) AS MaxDate from Stats").MaxDate)
-  return Date(maxdate_db, dateformat"y-m-d")
+  return maxdate_db
 end
 
 """
 populate the database from CSV stats file
 """
 function dbdump(cachedir::String)
-  max_date_in_db = maxdate()
-
+  max_date_in_db = ismissing(maxdate()) ? Dates.today() - Dates.Month(12) : Date(maxdate(), dateformat"y-m-d")
+  
   for row in CSV.Rows(joinpath("$(cachedir)/", "$(CSV_NAME)"))
     if(Date(row.date, dateformat"y-m-d") > max_date_in_db)
       if(!ismissing(row.client_type) && !isnothing(findone(Package, uuid = "$(row.package_uuid)"))
@@ -43,6 +43,10 @@ function dbdump(cachedir::String)
       end
     end
   end
+
+end
+
+function check_table_empty()
 
 end
 
