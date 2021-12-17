@@ -8,45 +8,45 @@ const STATS_URL = "https://julialang-logs.s3.amazonaws.com/public_outputs/curren
 const CSV_NAME = "package_requests_by_region_by_date.csv"
 
 """
-return max date that exists in database
+Return max date that exists in database
 """
 function maxdate()
-  maxdate_db = first(SearchLight.query("SELECT MAX(date) AS MaxDate from stats").MaxDate)
-  return ismissing(maxdate_db) ? Dates.today() : Date(maxdate_db)
+  maxdate = first(SearchLight.query("SELECT MAX(date) AS maxdate from stats").maxdate)
+
+  ismissing(maxdate) ? Dates.today() : Date(maxdate)
 end
 
 """
-populate the database from CSV stats file
+Populate the database from CSV stats file
 """
 function dbdump(cachedir::String)
   max_date_in_db = maxdate()
-  
+
   for row in CSV.Rows(joinpath("$(cachedir)/", "$(CSV_NAME)"))
-    if(Date(row.date) > max_date_in_db)
-      if(!ismissing(row.client_type) && !isnothing(findone(Package, uuid = "$(row.package_uuid)"))
-        && !endswith(findone(Package, uuid = "$(row.package_uuid)").name, "_jll") && row.client_type == "user")
-        m = Stat()
-        m.package_uuid = row.package_uuid
-        m.package_name = findone(Package, uuid = "$(row.package_uuid)").name
-        m.status = parse(Int, row.status)
-        m.region = row.region
-        m.date = Date(row.date)
-        m.request_count = parse(Int, row.request_count)
+    rowdate = Date(row.date)
 
-        SearchLight.update_or_create(
-          m, 
-          package_uuid = row.package_uuid,
-          region = row.region,
-          date = Date(row.date),
-          skip_update = true
-        )
-      end
-    end
+    rowdate < max_date_in_db && continue
+    row.client_type == "user" || ismissing(row.client_type) && continue
+
+    package = findone(Package, uuid = row.package_uuid)
+    isnothing(package) || endswith(package.name, "_jll") && continue
+
+    m = Stat()
+    m.package_uuid = row.package_uuid
+    m.package_name = package.name
+    m.status = parse(Int, row.status)
+    m.region = row.region
+    m.date = rowdate
+    m.request_count = parse(Int, row.request_count)
+
+    SearchLight.update_or_create(
+      m,
+      package_uuid = row.package_uuid,
+      region = row.region,
+      date = rowdate,
+      skip_update = true
+    )
   end
-
-end
-
-function check_table_empty()
 
 end
 
@@ -57,12 +57,14 @@ Place in root/db/data/
 function unzip(cachedir::String)
   try
     gz_data = readdir(cachedir)
+
     GZip.open("$(cachedir)/$(gz_data[1])", "rb") do f_in
       stream = read(f_in)
       write("$(cachedir)/$(chop(gz_data[1], tail=3))", stream)
     end
-  catch
-    @warn "uzip failed."
+  catch ex
+    @error ex
+    rethrow(ex)
   end
 end
 

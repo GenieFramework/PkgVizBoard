@@ -1,29 +1,23 @@
 module StatsController
 
-using Genie.Renderer.Html, Genie.Renderer.Json, SearchLight, Stats
+using SearchLight, Stats
+using Dashboard
 
-#TODO: ask adrian if appended with with new pkg name
-# should again make new separate request to only get data for
-# that package instead of pulling all the data again for all packages
-function search(pkg_names, areas, startdate, enddate)
+function search(pkg_names, regions, startdate, enddate)
+    isempty(pkg_names) || isempty(regions) && return
 
-    if first(pkg_names) != "" && size(areas) > (0,)
-        if "all" in areas
-            SearchLight.find(Stat,
-                SQLWhereEntity[
-                    SQLWhereExpression("package_name IN ( $(repeat("?,", length(pkg_names))[1:end-1] ) )", pkg_names),
-                    SQLWhereExpression("date >= ? AND date <= ?", startdate, enddate)
-                ]
-            )
-        else
-            SearchLight.find(Stat,
-                SQLWhereEntity[
-                    SQLWhereExpression("package_name IN ( $(repeat("?,", length(pkg_names))[1:end-1] ) )", pkg_names),
-                    SQLWhereExpression("region IN ( $(repeat("?,", length(areas))[1:end-1] ) )", areas),
-                    SQLWhereExpression("date >= ? AND date <= ?", startdate, enddate)
-                ]
-            )
-        end
+    pkg_names = map(pkg_names) do pkg
+        (endswith(pkg, ".jl") ? pkg[1:end-3] : pkg) |> lowercase
     end
+
+    where_filters = SQLWhereEntity[
+        SQLWhereExpression("lower(package_name) IN ( $(repeat("?,", length(pkg_names))[1:end-1] ) )", pkg_names),
+        SQLWhereExpression("date >= ? AND date <= ?", startdate, enddate)
+    ]
+
+    Dashboard.ALL_REGIONS in regions || push!(where_filters, SQLWhereExpression("region IN ( $(repeat("?,", length(regions))[1:end-1] ) )", regions))
+
+    SearchLight.find(Stat, where_filters)
 end
+
 end
