@@ -3,6 +3,9 @@ module S3DBTask
 using Genie
 using GZip, CSV, Dates
 using SearchLight, SearchLightSQLite, Stats, Packages
+using Logging
+
+SearchLight.config.log_level = Logging.Error
 
 const STATS_URL = "https://julialang-logs.s3.amazonaws.com/public_outputs/current/package_requests_by_region_by_date.csv.gz"
 const CSV_NAME = "package_requests_by_region_by_date.csv"

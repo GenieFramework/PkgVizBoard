@@ -54,7 +54,14 @@ page(
 
         row([
           cell(style = "padding: 4px;", [
-            chip("", nothing, ["{{pkg}}: {{totals[pkg]}}"], size = "md", square = true, style = "width: 100%; ")
+            chip("", nothing, ["{{pkg}}: {{totals[pkg]}}"], size = "md", square = true, style = "width: 100%; ", outline = true)
+            plot("[{ x:(trends[pkg] && trends[pkg][0] ? trends[pkg][0].x : []), y:(trends[pkg] && trends[pkg][0] ? trends[pkg][0].y : []), type:'scatter' },
+                    { x:(trends[pkg] && trends[pkg][1] ? trends[pkg][1].x : []), y:(trends[pkg] && trends[pkg][1] ? trends[pkg][1].y : []), type:'scatter' }]",
+                  layout = "{ plot_bgcolor:'transparent', height:300, showlegend:false,
+                              xaxis: { ticks:'', showline:false, showticklabels:false },
+                              yaxis: { ticks:'', showline:false, showticklabels:false }
+                            }",
+                  config = "{ displaymodebar:false }")
           ], @recur(:"pkg in searchterms"))
         ], @iif(:searchterms))
 

@@ -1,25 +1,15 @@
 module Dashboard
 
 using Stipple, StipplePlotly
-using Dates
-using StatsController
+using Dates, Stats
 using SearchLight, SearchLightSQLite
 using Packages
 using OrderedCollections
-
-function plotcomponent(x_val, y_val, name)
-  PlotData(
-    x = x_val,
-    y = y_val,
-    plot = StipplePlotly.Charts.PLOT_TYPE_SCATTER,
-    name = name
-  )
-end
+using DataFrames, GLM
 
 
-function insert_plot_data(r_stats, model)
+function stats(r_stats)
   stats = OrderedDict{String,OrderedDict{Date,Int}}()
-  totals = Dict{String,Int}()
 
   for r_stat in r_stats
     haskey(stats, r_stat.package_name) || (stats[r_stat.package_name] = Dict{Date,Int}())
@@ -34,20 +24,39 @@ function insert_plot_data(r_stats, model)
     stats[r_stat.package_name] = current_pkg_stats
   end
 
-  plot_component_data::Vector{PlotData} = PlotData[]
+  stats
+end
 
-  for (pkg_name, pkg_data) in stats
+
+function StipplePlotly.Charts.PlotData(name, data)
+  PlotData( y = lm(@formula(y ~ x), DataFrame(y = data, x = 1:length(data))) |> predict,
+            x = 1:length(data),
+            name = name,
+            plot = StipplePlotly.Charts.PLOT_TYPE_LINE)
+end
+
+
+function computestats(r_stats, model)
+  data = typeof(model.data[])()
+  totals = typeof(model.totals[])()
+  trends = typeof(model.trends[])()
+
+  for (pkg_name, pkg_data) in stats(r_stats)
     x_val, y_val = String[], Int64[]
     for(download_date, req_count) in pkg_data
       push!(x_val, Dates.format(download_date, "yyyy-mm-dd"))
       push!(y_val, req_count)
     end
 
-    push!(plot_component_data, plotcomponent(x_val, y_val, pkg_name))
-    totals[pkg_name] = sum(values(pkg_data) |> collect)
+    vals = pkg_data |> values |> collect
+
+    push!(data, PlotData(x = x_val, y = y_val, name = pkg_name, plot = StipplePlotly.Charts.PLOT_TYPE_SCATTER))
+    totals[pkg_name] = sum(vals |> collect)
+    trends[pkg_name] = [PlotData(pkg_name, vals),
+                        PlotData(x = 1:length(vals), y = vals, name = pkg_name, plot = StipplePlotly.Charts.PLOT_TYPE_LINE)]
   end
 
-  plot_component_data, totals
+  data, totals, trends
 end
 
 #== handlers ==#
@@ -65,11 +74,7 @@ function handlers(model)
       return
     end
 
-    model.data[], model.totals[] = insert_plot_data(StatsController.search(model.searchterms[],
-                                                            model.filter_regions[],
-                                                            model.filter_startdate[],
-                                                            model.filter_enddate[]),
-                                                      model)
+    model.data[], model.totals[], model.trends[] = computestats(Stats.search(model), model)
 
     model.isprocessing[] = false
   end
@@ -118,6 +123,9 @@ export Model
 
   # downloads totals
   totals::R{Dict{String,Int}} = Dict{String,Int}()
+
+  # trendlines
+  trends::R{Dict{String,Vector{PlotData}}} = Dict{String,Vector{PlotData}}()
 end
 
 
