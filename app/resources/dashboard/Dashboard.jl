@@ -5,6 +5,7 @@ using Dates
 using StatsController
 using SearchLight, SearchLightSQLite
 using Packages
+using OrderedCollections
 
 function plotcomponent(x_val, y_val, name)
   PlotData(
@@ -17,7 +18,7 @@ end
 
 
 function insert_plot_data(r_stats, model)
-  stats = Dict{String,Dict{Date,Int}}()
+  stats = OrderedDict{String,OrderedDict{Date,Int}}()
   totals = Dict{String,Int}()
 
   for r_stat in r_stats
@@ -37,9 +38,7 @@ function insert_plot_data(r_stats, model)
 
   for (pkg_name, pkg_data) in stats
     x_val, y_val = String[], Int64[]
-    sorted_pkg_data = sort(pkg_data)
-
-    for(download_date, req_count) in sorted_pkg_data
+    for(download_date, req_count) in pkg_data
       push!(x_val, Dates.format(download_date, "yyyy-mm-dd"))
       push!(y_val, req_count)
     end
