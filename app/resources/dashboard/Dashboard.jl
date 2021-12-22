@@ -7,6 +7,7 @@ using Packages
 using OrderedCollections
 using DataFrames, GLM
 
+const max_search_items = 6
 
 function stats(r_stats)
   stats = OrderedDict{String,OrderedDict{Date,Int}}()
@@ -51,8 +52,8 @@ function computestats(r_stats, model)
     vals = pkg_data |> values |> collect
 
     push!(data, PlotData(x = x_val, y = y_val, name = pkg_name, plot = StipplePlotly.Charts.PLOT_TYPE_SCATTER))
-    totals[pkg_name] = sum(vals |> collect)
-    trends[pkg_name] = [PlotData(pkg_name, vals),
+    totals[lowercase(pkg_name)] = sum(vals |> collect)
+    trends[lowercase(pkg_name)] = [PlotData(pkg_name, vals),
                         PlotData(x = 1:length(vals), y = vals, name = pkg_name, plot = StipplePlotly.Charts.PLOT_TYPE_LINE)]
   end
 
@@ -70,6 +71,12 @@ function handlers(model)
 
     if isempty(model.searchterms[]) || isempty(model.filter_regions[])
       model.isprocessing[] = false
+
+      return
+    end
+
+    if length(model.searchterms[]) > max_search_items
+      model.searchterms[] = model.searchterms[1:max_search_items]
 
       return
     end
