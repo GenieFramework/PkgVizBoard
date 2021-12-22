@@ -104,7 +104,7 @@ export Model
 @reactive mutable struct Model <: ReactiveModel
   # filter UI
   searchterms::R{Vector{String}} = String[]
-  packages::Vector{String} = [] #[p.name for p in all(Package, SQLQuery(order = "name ASC"))]
+  packages::Vector{String} = ["Genie", "Stipple"] #[p.name for p in all(Package, SQLQuery(order = "name ASC"))]
 
   filter_startdate::R{Date} = Dates.today() - Dates.Month(3)
   filter_enddate::R{Date} = Dates.today() - Dates.Day(1)
@@ -121,9 +121,12 @@ export Model
 end
 
 Stipple.js_methods(::Model) = raw"""
-    showAlarm() { 
-      console.log("Hello World")
-    }
+  filterFn (val, update, abort) {
+    update(() => {
+      const needle = val.toLowerCase()
+      this.packages = ["Genie", "Stipple"].filter(v => v.toLowerCase().indexOf(needle) > -1)
+    })
+  }
 """
 
 function factory()
