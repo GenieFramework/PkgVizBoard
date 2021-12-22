@@ -45,7 +45,6 @@ page(
           ])
         ])
       ])
-
     ])
 
     row([
@@ -56,7 +55,9 @@ page(
           section(class="col-12 col-sm-12 col-md-6 col-lg-2", [
             card(flat = true, style="width: 100%", class="st-module", [
               cardsection([
-                h5(["{{pkg}} {{totals[pkg]}} downloads"])
+                h5(["{{pkg}} {{totals[pkg]}} "], [
+                  icon("save_alt", alt = "Downloads")
+                ])
                 separator()
                 cardsection([
                   plot("[ { x:(trends[pkg] && trends[pkg][0] ? trends[pkg][0].x : []), y:(trends[pkg] && trends[pkg][0] ? trends[pkg][0].y : []), type:'scatter', name:pkg },
