@@ -120,6 +120,11 @@ export Model
   totals::R{Dict{String,Int}} = Dict{String,Int}()
 end
 
+Stipple.js_methods(::Model) = raw"""
+    showAlarm() { 
+      console.log("Hello World")
+    }
+"""
 
 function factory()
   model = Model |> init |> handlers

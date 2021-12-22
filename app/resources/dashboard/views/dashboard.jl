@@ -9,7 +9,9 @@ page(
                 usechips = true, useinput = true, maxvalues = 5, hidebottomspace = true,
                 newvaluemode = "add-unique", label = "Search for packages",
                 rules = "[val => val && val.length > 0 || 'Please select at least one package']",
-                hint = "Type package name then ENTER to search. Repeat to add multiple packages (max 5).")
+                hint = "Type package name then ENTER to search. Repeat to add multiple packages (max 5).",
+               filter! = "showAlarm()"
+              )
       ])
     ])
 
