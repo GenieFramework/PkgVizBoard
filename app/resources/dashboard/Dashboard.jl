@@ -135,6 +135,11 @@ export Model
   trends::R{Dict{String,Vector{PlotData}}} = Dict{String,Vector{PlotData}}()
 end
 
+Stipple.js_methods(::Model) = raw"""
+    showAlarm() { 
+      console.log("Hello World")
+    }
+"""
 
 function factory()
   model = Model |> init |> handlers
