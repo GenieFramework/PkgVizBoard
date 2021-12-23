@@ -5,7 +5,7 @@ page(
 
     row([
       Html.div(class="col-12", [
-        select(:searchterms, options = :packages, loading = :isprocessing, readonly = :isprocessing,
+        select(:searchterms, options = :options, loading = :isprocessing,
                 multiple = true, clearable = true, filled = true, counter = true,
                 usechips = true, useinput = true, maxvalues = Dashboard.max_search_items, hidebottomspace = true,
                 newvaluemode = "add-unique", label = "Search for packages",
