@@ -7,6 +7,8 @@ using SearchLight, SearchLightSQLite
 using Packages
 using OrderedCollections
 
+#TODO: package names .js const with array of object names 
+
 function plotcomponent(x_val, y_val, name)
   PlotData(
     x = x_val,
@@ -98,13 +100,19 @@ end
 
 const ALL_REGIONS = "all"
 const REGIONS = String[ALL_REGIONS, "au", "cn-east", "cn-northeast", "cn-southeast", "eu-central", "in", "kr", "sa", "sg", "us-east", "us-west"]
+const PACKAGE_NAMES = 
+# json file
 
 export Model
 
 @reactive mutable struct Model <: ReactiveModel
   # filter UI
   searchterms::R{Vector{String}} = String[]
-  packages::Vector{String} = ["Genie", "Stipple"] #[p.name for p in all(Package, SQLQuery(order = "name ASC"))]
+  packages::Vector{String} = ["Genie", "Stipple", "Dash", "StippleUI"] #[p.name for p in all(Package, SQLQuery(order = "name ASC"))]
+  
+  options::Vector{String} = []  
+  
+  # TODO: query the db once and create a const package = [] 
 
   filter_startdate::R{Date} = Dates.today() - Dates.Month(3)
   filter_enddate::R{Date} = Dates.today() - Dates.Day(1)
@@ -121,17 +129,16 @@ export Model
 end
 
 Stipple.js_methods(::Model) = raw"""
-  filterFn (val, update, abort) {
-    update(() => {
-      const needle = val.toLowerCase()
-      this.packages = ["Genie", "Stipple"].filter(v => v.toLowerCase().indexOf(needle) > -1)
+filterFn (val, update, abort) {
+  update(() => {
+    const needle = val.toLowerCase()
+    this.options = this.packages.filter(v => v.toLowerCase().indexOf(needle) > -1)
     })
   }
-"""
+  """
 
 function factory()
   model = Model |> init |> handlers
 end
-
 
 end
