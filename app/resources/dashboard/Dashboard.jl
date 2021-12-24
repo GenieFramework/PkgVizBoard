@@ -155,7 +155,7 @@ Stipple.js_methods(::Model) = raw"""
 filterFn (val, update, abort) {
   update(() => {
     const needle = val.toLowerCase()
-    this.options = this.packages.filter(v => v.toLowerCase().indexOf(needle) > -1)
+    this.options = db_packages.filter(v => v.toLowerCase().indexOf(needle) > -1)
     })
   }
   """
