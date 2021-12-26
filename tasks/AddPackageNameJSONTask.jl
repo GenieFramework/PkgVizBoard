@@ -4,31 +4,31 @@ using Packages
 using SearchLight, SearchLightSQLite, JSON, DataFrames
 
 function df2json(df::DataFrame)
-    len = length(df[:,1])
-    indices = names(df)
-    jsonarray = [Dict([string(index) => (ismissing(df[!, index][i]) ? nothing : df[!, index][i])
-                       for index in indices])
-                 for i in 1:len]
-    return JSON.json(jsonarray)
+	len = length(df[:,1])
+	indices = names(df)
+	jsonarray = [Dict([string(index) => (ismissing(df[!, index][i]) ? nothing : df[!, index][i])
+							for index in indices]) for i in 1:len]
+	return JSON.json(jsonarray)
 end
   
 function writejson(path::String,df::DataFrame)
-    f = tempname();
-    write(f,df2json(df))
-    @info f
-    
-    open(f, "r") do io
-        pkg_arr = String[]
-        data = read(io, String)
-        parsed_data =  JSON.parse(data)
-        for i in parsed_data
-            push!(pkg_arr, i["name"])
-        end
-
-        @info pkg_arr
-        
-        write("public/js/packages.js", "let packages = $(pkg_arr)")
-    end
+	try
+		json_file = tempname();
+		write(json_file,df2json(df))
+		
+		open(json_file, "r") do io
+			pkg_arr = String[]
+			json_data = read(io, String)
+			parsed_data = JSON.parse(json_data)
+			for pkg in parsed_data
+					push!(pkg_arr, pkg["name"])
+			end
+			write(path, "let packages = $(pkg_arr)")
+		end
+	catch ex
+		@error ex
+		rethrow(ex)
+	end
 end
 
 """
@@ -39,7 +39,7 @@ function runtask()
   package_name_df = SearchLight.query("SELECT DISTINCT packages.name FROM packages")
   
   # write json to file
-  writejson("public/packages.json",package_name_df); 
+  writejson("public/js/packages.js",package_name_df); 
 end
 
 end

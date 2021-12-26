@@ -1,7 +1,7 @@
 using DashboardController, StatsController
 using Genie, Stipple, StippleUI, StipplePlotly
 
-const assets_config = Genie.Assets.AssetsConfig(package = "PkgVizBoard")
+# const assets_config = Genie.Assets.AssetsConfig(package = "PkgVizBoard")
 
 #=== config ==#
 
