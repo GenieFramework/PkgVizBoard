@@ -107,8 +107,8 @@ export Model
 @reactive mutable struct Model <: ReactiveModel
   # filter UI
   searchterms::R{Vector{String}} = String[]
-  packages::Vector{String} = ["Genie", "Stipple", "Dash", "StippleUI", "SearchLight"] #[p.name for p in all(Package, SQLQuery(order = "name ASC"))]
-  options::Vector{String} = []  
+  packages::Vector{String} = ["Genie", "Stipple", "Dash", "StippleUI", "SearchLight"]
+  options::Vector{String} = []
 
   filter_startdate::R{Date} = Dates.today() - Dates.Month(3)
   filter_enddate::R{Date} = Dates.today() - Dates.Day(1)
