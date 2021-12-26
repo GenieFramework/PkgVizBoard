@@ -7,7 +7,6 @@ using SearchLight, SearchLightSQLite
 using Packages
 using OrderedCollections
 
-#TODO: package names .js const with array of object names 
 
 function plotcomponent(x_val, y_val, name)
   PlotData(
@@ -108,11 +107,8 @@ export Model
 @reactive mutable struct Model <: ReactiveModel
   # filter UI
   searchterms::R{Vector{String}} = String[]
-  packages::Vector{String} = ["Genie", "Stipple", "Dash", "StippleUI"] #[p.name for p in all(Package, SQLQuery(order = "name ASC"))]
-  
+  packages::Vector{String} = ["Genie", "Stipple", "Dash", "StippleUI", "SearchLight"] #[p.name for p in all(Package, SQLQuery(order = "name ASC"))]
   options::Vector{String} = []  
-  
-  # TODO: query the db once and create a const package = [] 
 
   filter_startdate::R{Date} = Dates.today() - Dates.Month(3)
   filter_enddate::R{Date} = Dates.today() - Dates.Day(1)
@@ -132,10 +128,15 @@ Stipple.js_methods(::Model) = raw"""
 filterFn (val, update, abort) {
   update(() => {
     const needle = val.toLowerCase()
-    this.options = db_packages.filter(v => v.toLowerCase().indexOf(needle) > -1)
+    if( typeof packageList !== 'undefined' && packageList.length > 0)
+      this.options = packageList.filter(v => v.toLowerCase().indexOf(needle) > -1)
+    else {
+      console.error("`packages.js` missing. Please re-run AutoSearchPackageNamesTask")
+      this.options = this.packages
+    }
     })
   }
-  """
+"""
 
 function factory()
   model = Model |> init |> handlers

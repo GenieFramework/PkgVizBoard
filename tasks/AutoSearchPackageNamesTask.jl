@@ -1,4 +1,4 @@
-module AddPackageNameJSONTask
+module AutoSearchPackageNamesTask
 
 using Packages
 using SearchLight, SearchLightSQLite, JSON, DataFrames
@@ -13,17 +13,13 @@ end
   
 function writejson(path::String,df::DataFrame)
 	try
-		json_file = tempname();
-		write(json_file,df2json(df))
-		
-		open(json_file, "r") do io
+		open(path, "w") do io
 			pkg_arr = String[]
-			json_data = read(io, String)
-			parsed_data = JSON.parse(json_data)
+			parsed_data = JSON.parse(df2json(df))
 			for pkg in parsed_data
 					push!(pkg_arr, pkg["name"])
 			end
-			write(path, "let packages = $(pkg_arr)")
+			write(path, "let packageList = $(pkg_arr)")
 		end
 	catch ex
 		@error ex
@@ -32,14 +28,14 @@ function writejson(path::String,df::DataFrame)
 end
 
 """
-Reads the package names from Julia's registry and imports them into the database.
+Reads the package names from packages db and populate packages.js in public/js
 """
 function runtask()
   # read packages_names from db that are unique
-  package_name_df = SearchLight.query("SELECT DISTINCT packages.name FROM packages")
+  package_names_df = SearchLight.query("SELECT DISTINCT packages.name FROM packages")
   
   # write json to file
-  writejson("public/js/packages.js",package_name_df); 
+  writejson("public/js/packages.js",package_names_df); 
 end
 
 end
