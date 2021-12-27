@@ -3,6 +3,8 @@ module AutoSearchPackageNamesTask
 using Packages
 using SearchLight, SearchLightSQLite, JSON, DataFrames
 
+const PACKAGE_PATH = "public/js/packages.js"
+
 function df2json(df::DataFrame)
 	len = length(df[:,1])
 	indices = names(df)
@@ -35,7 +37,7 @@ function runtask()
   package_names_df = SearchLight.query("SELECT DISTINCT packages.name FROM packages")
   
   # write json to file
-  writejson("public/js/packages.js",package_names_df); 
+  writejson(PACKAGE_PATH ,package_names_df); 
 end
 
 end
