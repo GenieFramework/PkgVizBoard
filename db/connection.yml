@@ -2,3 +2,8 @@ dev:
   adapter: SQLite
   database: db/dev.sqlite
   config:
+
+prod:
+  adapter: SQLite
+  database: db/dev.sqlite
+  config:

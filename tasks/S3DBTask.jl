@@ -16,7 +16,7 @@ Return max date that exists in database
 function maxdate()
   maxdate = first(SearchLight.query("SELECT MAX(date) AS maxdate from stats").maxdate)
 
-  ismissing(maxdate) ? Dates.today() : Date(maxdate)
+  ismissing(maxdate) ? Dates.today() - Dates.Year(1) : Date(maxdate)
 end
 
 """

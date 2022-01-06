@@ -1,6 +1,8 @@
 page(
   model, partial = true, [
-    heading("PkgStats - Package downloads stats for Julia")
+    heading(
+      "Package downloads stats for Julia",
+      img = img(src="/img/app/stats.png", style="height: 40px; margin-bottom: -15px; padding-right: 10px;"))
 
     row([
       Html.div(class="col-12", [
@@ -54,12 +56,12 @@ page(
         row([
           section(class="col-12 col-sm-12 col-md-6 col-lg-2", [
             card(flat = true, style="width: 100%", class="st-module", [
-              cardsection([
+              card_section([
                 h5(["{{pkg}} {{totals[pkg]}} "], [
                   icon("save_alt", alt = "Downloads")
                 ])
                 separator()
-                cardsection([
+                card_section([
                   plot("[ { x:(trends[pkg] && trends[pkg][0] ? trends[pkg][0].x : []), y:(trends[pkg] && trends[pkg][0] ? trends[pkg][0].y : []), type:'scatter', name:pkg },
                           { x:(trends[pkg] && trends[pkg][1] ? trends[pkg][1].x : []), y:(trends[pkg] && trends[pkg][1] ? trends[pkg][1].y : []), type:'bar', name:'Downloads' } ]",
                           layout = "{ plot_bgcolor:'transparent', height:100, showlegend:false,
@@ -80,7 +82,10 @@ page(
 
     row([
       footer([
-        h6("Powered by Stipple")
+        h6("Powered by <a style='color: black;' href='https://github.com/GenieFramework/Stipple.jl'>Stipple</a> | Interactive data applications in pure Julia")
+        p("You can contribute to this project by creating an issue or pull request on <a style='color: black;' href=''>GitHub</a>.<br/>
+          If you enjoy this project please consider starring the <a style='color: black;' href='https://github.com/GenieFramework/Stipple.jl'>Stipple.jl</a> GitHub repo.
+          It will help us fund our open source projects.")
       ])
     ])
   ], @iif(:isready)
