@@ -1,8 +1,7 @@
+Html.div([
 page(
   model, partial = true, [
-    heading(
-      "Package downloads stats for Julia",
-      img = img(src="/img/app/stats.png", style="height: 40px; margin-bottom: -15px; padding-right: 10px;"))
+    heading("Package downloads stats for Julia")
 
     row([
       Html.div(class="col-12", [
@@ -79,14 +78,47 @@ page(
         plot(:data, layout = :layout, config = "{ displayLogo:false, displayModeBar:false }")
       ])
     ])
-
-    row([
-      footer([
-        h6("Powered by <a style='color: black;' href='https://github.com/GenieFramework/Stipple.jl'>Stipple</a> | Interactive data applications in pure Julia")
-        p("You can contribute to this project by creating an issue or pull request on <a style='color: black;' href=''>GitHub</a>.<br/>
-          If you enjoy this project please consider starring the <a style='color: black;' href='https://github.com/GenieFramework/Stipple.jl'>Stipple.jl</a> GitHub repo.
-          It will help us fund our open source projects.")
-      ])
-    ])
   ], @iif(:isready)
 )
+Html.div(class="container", [
+  row([
+    cell([
+      p("💜 This app is created and maintained by the <strong><a style='color: black;' href='https://genieframework.com' target='_blank'>Genie</a></strong>
+        team as a token of appreciation for the amazing
+        work that is being done by the Julia language creators, the Julia package creators, and the Julia users from all around the world.")
+      p("🌐 You can use the underlying API to integrate this app with your own web application or web service.
+        Call:
+        <ul>
+          <li><code>/api/v1/regions</code> to get the list of regions</li>
+          <li><code>/api/v1/packages</code> to get the list of packages</li>
+          <li><code>/api/v1/stats</code> to query the download stats,
+            ex <br/>
+            <code>/api/v1/stats?packages=Genie,Stipple</code><br/>
+            <code>/api/v1/stats?regions=eu-central,us-west&packages=Genie,Stipple&startdate=2021-12-30&enddate=2022-01-15</code><br/>
+          </li>
+        </ul>
+        <br/>
+        🚨 <strong>Responsible use of the API is mandatory</strong>. We have not added any rate limiting or throttling.
+          Please don't abuse the API or you'll ruin it for everybody.
+        ")
+      p("🏷️ Create your own GitHub README badge by using <code>shields.io</code> and our API, ex
+        <code>https://shields.io/endpoint?url=https://pkgs.genieframework.com/api/v1/badge/Genie</code>.
+        See the shields.io website for more details to customize the badge.")
+      p("📦 If you want to get a copy of the underlying database, you can download it here:
+        <a style='color: black' href='https://www.dropbox.com/s/3h48n0xk3gc2x1y/dev.sqlite?dl=0' target='_blank'>dev.sqlite</a>")
+      p("✅ You can contribute to this project by creating an issue or pull request on
+        <a style='color: black;' href='https://github.com/GenieFramework/PkgVizBoard' target='_blank'>GitHub</a>.")
+      p("⭐ If you enjoy this project please consider starring the
+        <a style='color: black;' href='https://github.com/GenieFramework/Genie.jl' target='_blank'>Genie.jl</a> GitHub repo.
+        It will help us fund our open source projects.")
+    ])
+  ])
+  row([
+    cell([
+      footer([
+        h6("Powered by <a style='color: black;' href='https://genieframework.com' target='_blank'>Genie</a> | Build interactive data applications in pure Julia")
+      ])
+    ])
+  ])
+])
+])
