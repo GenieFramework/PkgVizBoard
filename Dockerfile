@@ -36,6 +36,3 @@ ENV EARLYBIND "true"
 
 # run app
 CMD ["bin/server"]
-
-# or maybe include a Julia file
-# CMD julia -e 'using Pkg; Pkg.activate("."); include("IrisClustering.jl"); '
