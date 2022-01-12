@@ -134,8 +134,11 @@ filterFn (val, update, abort) {
       console.error("`packages.js` missing. Please re-run AutoSearchPackageNamesTask")
       this.options = this.packages
     }
-    })
-  }
+  })
+},
+setModel (val) {
+  model.value = val
+}
 """
 
 function factory()
