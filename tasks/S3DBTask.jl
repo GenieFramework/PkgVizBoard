@@ -29,7 +29,7 @@ function dbdump(cachedir::String)
     rowdate = Date(row.date)
 
     rowdate < max_date_in_db && continue
-    (ismissing(row.client_type) || row.client_type == "user") && continue
+    (ismissing(row.client_type) || row.client_type != "user") && continue
 
     package = findone(Package, uuid = row.package_uuid)
     (isnothing(package) || endswith(package.name, "_jll")) && continue

@@ -49,3 +49,4 @@ db/data/*.csv
 
 db/*.sqlite
 /db/dev.sqlite.zip
+/_archive
