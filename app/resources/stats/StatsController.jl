@@ -5,7 +5,7 @@ module API
 module V1
 
 using Dashboard, Packages, Stats
-using Genie.Router, Genie.Renderers.Json, Genie.Renderers.Js, Genie.Cache
+using Genie.Router, Genie.Renderers.Json, Genie.Cache
 using SearchLight
 using Dates
 
