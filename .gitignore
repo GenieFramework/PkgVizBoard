@@ -49,6 +49,3 @@ db/data/*.csv
 
 db/*.sqlite
 /db/dev.sqlite.zip
-
-# excluding the package names
-public/js/packages.js
