@@ -2,8 +2,25 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>PkgStats :: Package download stats for Julia</title>
-    <script src='/assets/js/packages.js'></script>
+    <title>Package download stats for Julia</title>
+    <link rel="stylesheet" href="/css/app.css" />
+
+    <% if Genie.Configuration.isprod() %>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-DW8DKHSH68"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-DW8DKHSH68");
+    </script>
+    <% else %> <% end %>
   </head>
   <body class="container-fluid">
     <% @yield %>

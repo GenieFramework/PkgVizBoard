@@ -60,16 +60,18 @@ function badge()
   isempty(packages) && return (Json.error("Argument `packages` is required") |> json)
 
   package = packages[1]
-  data = stats([package], regions, startdate, enddate) |> first
-  total = data[package] |> values |> collect |> sum
+  withcache(package, 24 * 60 * 60) do # 24h cache
+    data = stats([package], [Dashboard.ALL_REGIONS], Date("2021-09-01"), today) |> first
+    total = data[package] |> values |> collect |> sum
 
-  Dict(
-    :schemaVersion => 1,
-    :label => "$package downloads",
-    :message => total,
-    :color => "#9558B2",
-    :namedLogo => "Julia"
-  ) |> json
+    Dict(
+      :schemaVersion => 1,
+      :label => "$package downloads",
+      :message => "$total",
+      :color => "blueviolet",
+      :namedLogo => "Julia"
+    ) |> json
+  end
 end
 
 
