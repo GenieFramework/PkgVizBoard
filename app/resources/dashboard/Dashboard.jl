@@ -1,6 +1,7 @@
 module Dashboard
 
 using Stipple, StipplePlotly
+using Genie.Requests
 using Dates, Stats
 using SearchLight, SearchLightSQLite
 using Packages
@@ -8,6 +9,7 @@ using OrderedCollections
 using DataFrames, GLM
 
 const max_search_items = 6
+const request_params = Dict{ChannelName,Dict{Symbol,String}}()
 
 function stats(r_stats)
   stats = OrderedDict{String,OrderedDict{Date,Int}}()
@@ -101,6 +103,27 @@ function handlers(model)
   end
 
   on(model.isready) do val
+    if haskey(request_params, getchannel(model))
+      for (k,v) in request_params[getchannel(model)]
+        if (k in [:packages, :regions])
+          v = occursin(',', v) ? split(v, ',', keepempty = false) : [v]
+        end
+
+        if k == :packages
+          model.searchterms[] = v
+        elseif k == :regions
+          model.filter_regions[] = v
+        elseif k == :startdate
+          model.filter_startdate[] = v
+        elseif k == :enddate
+          model.filter_enddate[] = v
+        else
+          @warn "No match!"
+        end
+      end
+
+      delete!(request_params, getchannel(model))
+    end
   end
 
   model
@@ -116,7 +139,7 @@ export Model
 @reactive mutable struct Model <: ReactiveModel
   # filter UI
   searchterms::R{Vector{String}} = String[]
-  packages::Vector{String} = [] #[p.name for p in all(Package, SQLQuery(order = "name ASC"))]
+  packages::Vector{String} = []
 
   filter_startdate::R{Date} = Dates.today() - Dates.Month(3)
   filter_enddate::R{Date} = Dates.today() - Dates.Day(1)
@@ -138,6 +161,9 @@ end
 
 function factory()
   model = Model |> init |> handlers
+  isempty(getpayload()) || (request_params[getchannel(model)] = getpayload())
+
+  model
 end
 
 
