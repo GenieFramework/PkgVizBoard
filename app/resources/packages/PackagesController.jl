@@ -1,10 +1,13 @@
 module PackagesController
 
-using SearchLight, JSON3
+using SearchLight, Genie.Renderers.Js, Genie.Cache
 using Packages, Dashboard
 
-function search_pkg_name(pkg_name)
-    open("package_data.json", "w") do io
-        JSON3.pretty(io, Packages.getpackagelist())
-    end
+function packagenames()
+  withcache("pkgnames", 24 * 60 * 60) do # 24 hours
+    pkgnames = [pkgname.name for pkgname in all(Package)]
+    "const packageList = $pkgnames" |> js
+  end
+end
+
 end

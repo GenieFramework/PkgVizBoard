@@ -7,16 +7,7 @@ using Packages
 using OrderedCollections
 using DataFrames, GLM
 
-
-function plotcomponent(x_val, y_val, name)
-  PlotData(
-    x = x_val,
-    y = y_val,
-    plot = StipplePlotly.Charts.PLOT_TYPE_SCATTER,
-    name = name
-  )
-end
-
+const max_search_items = 6
 
 function stats(r_stats)
   stats = OrderedDict{String,OrderedDict{Date,Int}}()
@@ -118,8 +109,7 @@ end
 #== reactive model ==#
 
 const ALL_REGIONS = "all"
-const REGIONS = String[ALL_REGIONS, "au", "cn-east", "cn-northeast", "cn-southeast", "eu-central", "in", "kr", "sa", "sg", "us-east", "us-west"]
-const PACKAGE_NAMES = 
+const REGIONS = String[ALL_REGIONS, "au", "cn-east", "cn-northeast", "cn-southeast", "eu-central", "in", "kr", "sa", "sg", "us-east", "us-west"] 
 # json file
 
 export Model
