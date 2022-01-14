@@ -34,13 +34,16 @@ function dbdump(cachedir::String)
     package = findone(Package, uuid = row.package_uuid)
     (isnothing(package) || endswith(package.name, "_jll")) && continue
 
-    m = Stat()
-    m.package_uuid = row.package_uuid
-    m.package_name = package.name
-    m.status = parse(Int, row.status)
-    m.region = row.region
-    m.date = rowdate
-    m.request_count = parse(Int, row.request_count)
+    m = Stat(
+      package_uuid = row.package_uuid,
+      package_name = package.name,
+      status = parse(Int, row.status),
+      region = row.region,
+      date = rowdate,
+      request_count = parse(Int, row.request_count),
+      year = Year(rowdate).value,
+      month = string(rowdate)[1:7],
+    )
 
     SearchLight.update_or_create(
       m,

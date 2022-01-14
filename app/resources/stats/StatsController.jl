@@ -8,6 +8,7 @@ using Dashboard, Packages, Stats
 using Genie.Router, Genie.Renderers.Json, Genie.Cache
 using SearchLight
 using Dates
+using Humanize
 
 
 function __init__()
@@ -55,21 +56,47 @@ function packages()
 end
 
 
+function parseoptions(options)
+  result = Dict{Symbol,String}()
+
+  isempty(options) && return result
+
+  try
+    opts = split(options, '-', keepempty = false)
+    for opt in opts
+      key, value = split(opt, ':', keepempty = true)
+      result[Symbol(key)] = value
+    end
+  catch ex
+    @error ex
+    return result
+  end
+
+  result
+end
+
+
 function badge()
   packages, regions, startdate, enddate = inputs()
   isempty(packages) && return (Json.error("Argument `packages` is required") |> json)
 
+  options = parseoptions(params(:options, ""))
+  label = get(options, :label, "downloads")
+  sep = get(options, :sep, "")
+  color = get(options, :color, "blueviolet")
+  logo = get(options, :logo, "Julia")
+
   package = packages[1]
-  withcache(package, 24 * 60 * 60) do # 24h cache
+  withcache(string(package, label, sep, color, logo), 24 * 60 * 60) do # 24h cache
     data = stats([package], [Dashboard.ALL_REGIONS], Date("2021-09-01"), today) |> first
     total = data[package] |> values |> collect |> sum
 
     Dict(
       :schemaVersion => 1,
-      :label => "$package downloads",
-      :message => "$total",
-      :color => "blueviolet",
-      :namedLogo => "Julia"
+      :label => "$package $label",
+      :message => "$(Humanize.digitsep(total, seperator = sep))",
+      :color => color,
+      :namedLogo => logo
     ) |> json
   end
 end

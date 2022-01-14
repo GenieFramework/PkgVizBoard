@@ -95,7 +95,7 @@ function handlers(model)
     ! isempty(val) && (model.isprocessing[] = true)
   end
 
-  onany(model.filter_startdate, model.filter_enddate, model.filter_regions) do st, ed, reg
+  onany(model.filter_startdate, model.filter_enddate, model.filter_regions, model.interval) do st, ed, reg, _
     isempty(reg) && (model.filter_regions[] = [ALL_REGIONS])
     length(reg) > 1 && in(ALL_REGIONS, reg) && (model.filter_regions[] = filter(x->x!=ALL_REGIONS, reg))
 
@@ -134,6 +134,10 @@ end
 const ALL_REGIONS = "all"
 const REGIONS = String[ALL_REGIONS, "au", "cn-east", "cn-northeast", "cn-southeast", "eu-central", "in", "kr", "sa", "sg", "us-east", "us-west"]
 
+const DAY = "day"
+const MONTH = "month"
+const YEAR = "year"
+
 export Model
 
 @reactive mutable struct Model <: ReactiveModel
@@ -146,6 +150,8 @@ export Model
 
   regions::Vector{String} = REGIONS
   filter_regions::R{Vector{String}} = String[ALL_REGIONS]
+
+  interval::R{String} = DAY
 
   # data for plot
   data::R{Vector{PlotData}} = []

@@ -14,7 +14,7 @@ page(
     ])
 
     row([
-      expansionitem(expandseparator = true, icon = "tune", label = "Filters",
+      expansionitem(expandseparator = true, icon = "tune", label = "Filters", hidebottomspace = true,
                     class="col-12", style="padding: 4px;", [
         row([
           Html.div(class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6", style="padding: 4px;", [
@@ -49,23 +49,44 @@ page(
 
     row([
       cell(class="st-module", [
-        h6("Packages downloads over time")
+        h5("Packages downloads over time", style="display: block", [
+          btngroup(dense = true, class="float-right", [
+              btn("View by", color = "primary", flat = true, ripple = false, nocaps = true, dense = true)
+              btndropdown(color = "primary", dense = true, [
+                list([
+                  item([
+                    btn(Dashboard.DAY, outline! = "interval == '$(Dashboard.DAY)'",
+                        icon = "calendar_month", label = "Day", class = "cursor-pointer", nocaps = true,
+                        @click("interval = \"$(Dashboard.DAY)\""))
+                  ])
+                  item([
+                    btn(Dashboard.MONTH, outline! = "interval == '$(Dashboard.MONTH)'",
+                        icon = "date_range", label = "Month", class = "cursor-pointer", nocaps = true,
+                        @click("interval = \"$(Dashboard.MONTH)\""))
+                  ])
+                  item([
+                    btn(Dashboard.YEAR, flat! = "interval != '$(Dashboard.YEAR)'",
+                        icon = "event", label = "Year", class = "cursor-pointer", nocaps = true,
+                        @click("interval = \"$(Dashboard.YEAR)\""))
+                  ])
+                ])
+              ])
+            ])
+        ])
 
         row([
           section(class="col-12 col-sm-12 col-md-6 col-lg-2", [
             card(flat = true, style="width: 100%", class="st-module", [
               card_section([
-                h5(["{{pkg}} {{totals[pkg]}} "], [
-                  icon("save_alt", alt = "Downloads")
-                ])
+                h5(["{{pkg}} {{totals[pkg]}} "])
                 separator()
                 card_section([
                   plot("[ { x:(trends[pkg] && trends[pkg][0] ? trends[pkg][0].x : []), y:(trends[pkg] && trends[pkg][0] ? trends[pkg][0].y : []), type:'scatter', name:pkg },
                           { x:(trends[pkg] && trends[pkg][1] ? trends[pkg][1].x : []), y:(trends[pkg] && trends[pkg][1] ? trends[pkg][1].y : []), type:'bar', name:'Downloads' } ]",
-                          layout = "{ plot_bgcolor:'transparent', height:100, showlegend:false,
-                                      margin: { t:0, b:0, l:0, r:0 },
+                          layout = "{ plot_bgcolor:'transparent', height:75, showlegend:false,
+                                      margin: { t:0, b:0, l:40, r:0 },
                                       xaxis: { ticks:'', showline:false, showticklabels:false },
-                                      yaxis: { ticks:'', showline:false, showticklabels:false }
+                                      yaxis: {  }
                                     }",
                           config = "{ displayModeBar:false }")
                 ])
@@ -79,63 +100,5 @@ page(
     ])
   ], @iif(:isready)
 )
-Html.div(class="container", [
-  row([
-    cell([
-      h5("💜 About the project", id="about")
-      p("This app is created and maintained by the <strong><a style='color: black;' href='https://genieframework.com' target='_blank'>Genie</a></strong>
-        team as a token of appreciation for the amazing
-        work that is being done by the Julia language creators, the Julia package creators, and the Julia users from all around the world.",
-        style="padding-bottom: 20px;")
-
-      h5("🎖️ Package downloads badges", id="badges")
-      p("Create your own GitHub README badge to display total downloads for your package by using <code>shields.io</code> and our API, ex <br/>
-        <code>https://shields.io/endpoint?url=https://pkgs.genieframework.com/api/v1/badge/Genie</code><br/>
-        <img src='https://shields.io/endpoint?url=https://pkgs.genieframework.com/api/v1/badge/Genie' alt='Genie downloads badge' />.")
-      p("You can use this Markdown code sample to add the badge to your package's README.md file:<br/>
-        <code>[![Genie Downloads](https://shields.io/endpoint?url=https://pkgs.genieframework.com/api/v1/badge/Genie)](https://pkgs.genieframework.com?packages=Genie)</code>.",
-        style="padding-bottom: 20px;")
-
-      h5("🌐 API access", id="api")
-      p("You can use the underlying API to integrate this app with your own web application or web service.
-        Call:
-        <ul>
-          <li><code>/api/v1/regions</code> to get the list of regions</li>
-          <li><code>/api/v1/packages</code> to get the list of packages</li>
-          <li><code>/api/v1/stats</code> to query the download stats,
-            ex <br/>
-            <code>/api/v1/stats?packages=Genie,Stipple</code><br/>
-            <code>/api/v1/stats?regions=eu-central,us-west&packages=Genie,Stipple&startdate=2021-12-30&enddate=2022-01-15</code><br/>
-          </li>
-        </ul>")
-      p("<strong>Responsible use of the API is mandatory</strong>. We have not added any rate limiting or throttling.
-          Please don't abuse the API or you'll ruin it for everybody.",
-          style="padding-bottom: 20px;")
-
-      h5("📦 Database download", id="db")
-      p("If you want to get a copy of the underlying database, you can download it here:
-        <a style='color: black' href='https://www.dropbox.com/s/3h48n0xk3gc2x1y/dev.sqlite?dl=0' target='_blank'>dev.sqlite</a>",
-        style="padding-bottom: 20px;")
-
-      h5("💗 How to contribute", id="contribute")
-      p("You can contribute to this project by adding or suggesting features, reporting or squashing bugs, or by creating
-        issues and making pull requests on
-        <a style='color: black;' href='https://github.com/GenieFramework/PkgVizBoard' target='_blank'>GitHub</a>.
-        If you enjoy it, share the link and spread the word. ",
-        style="padding-bottom: 20px;")
-
-      h5("⭐ Star Genie on Github")
-      p("If you enjoy this project please consider starring the
-        <a style='color: black;' href='https://github.com/GenieFramework/Genie.jl' target='_blank'>Genie.jl</a> GitHub repo.
-        It will help us fund our open source projects.")
-    ])
-  ])
-  row([
-    cell([
-      footer([
-        h6("Powered by <a style='color: black;' href='https://genieframework.com' target='_blank'>Genie</a> | Build interactive data applications in pure Julia")
-      ])
-    ])
-  ])
-])
+partial(joinpath(Genie.config.path_resources, "dashboard", "views", "help.jl"), context = context)
 ])
