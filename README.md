@@ -1,6 +1,6 @@
 Local setup:
 
-- Download the database from [here](https://www.dropbox.com/s/3h48n0xk3gc2x1y/dev.sqlite?dl=0)
+- Download the database from [here](https://pkgs.genieframework.com/#db)
 - Place the dev.sql in `db/dev.sqlite`
 - In project root
 
