@@ -19,7 +19,7 @@ page(
         row([
           Html.div(class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6", style="padding: 4px;", [
             select(:filter_regions, options = :regions, multiple = true, clearable = true,
-              filled = true, label = "Regions", displayvalue = Dashboard.ALL_REGIONS, usechips = true,
+              filled = true, label = "Regions", displayvalue = PkgVizBoard.ALL_REGIONS, usechips = true,
               rules="[val => val && val.length > 0 || 'Please select at least one region']",
               hidebottomspace = true)
           ])
@@ -55,19 +55,19 @@ page(
               btndropdown(color = "primary", dense = true, [
                 list([
                   item([
-                    btn(Dashboard.DAY, outline! = "interval == '$(Dashboard.DAY)'",
+                    btn(PkgVizBoard.DAY, outline! = "interval == '$(PkgVizBoard.DAY)'",
                         icon = "calendar_month", label = "Day", class = "cursor-pointer", nocaps = true,
-                        @click("interval = \"$(Dashboard.DAY)\""))
+                        @click("interval = \"$(PkgVizBoard.DAY)\""))
                   ])
                   item([
-                    btn(Dashboard.MONTH, outline! = "interval == '$(Dashboard.MONTH)'",
+                    btn(PkgVizBoard.MONTH, outline! = "interval == '$(PkgVizBoard.MONTH)'",
                         icon = "date_range", label = "Month", class = "cursor-pointer", nocaps = true,
-                        @click("interval = \"$(Dashboard.MONTH)\""))
+                        @click("interval = \"$(PkgVizBoard.MONTH)\""))
                   ])
                   item([
-                    btn(Dashboard.YEAR, flat! = "interval != '$(Dashboard.YEAR)'",
+                    btn(PkgVizBoard.YEAR, flat! = "interval != '$(PkgVizBoard.YEAR)'",
                         icon = "event", label = "Year", class = "cursor-pointer", nocaps = true,
-                        @click("interval = \"$(Dashboard.YEAR)\""))
+                        @click("interval = \"$(PkgVizBoard.YEAR)\""))
                   ])
                 ])
               ])
@@ -78,13 +78,15 @@ page(
           section(class="col-12 col-sm-12 col-md-6 col-lg-2", [
             card(flat = true, style="width: 100%", class="st-module", [
               card_section([
-                h5(["{{pkg}} {{totals[pkg]}} "])
+                chip(square = true, outline = true, size = "md", icon = "download", [
+                  "{{totals[pkg]}}  {{pkg}}"
+                ])
                 separator()
                 card_section([
                   plot("[ { x:(trends[pkg] && trends[pkg][0] ? trends[pkg][0].x : []), y:(trends[pkg] && trends[pkg][0] ? trends[pkg][0].y : []), type:'scatter', name:pkg },
                           { x:(trends[pkg] && trends[pkg][1] ? trends[pkg][1].x : []), y:(trends[pkg] && trends[pkg][1] ? trends[pkg][1].y : []), type:'bar', name:'Downloads' } ]",
                           layout = "{ plot_bgcolor:'transparent', height:75, showlegend:false,
-                                      margin: { t:0, b:0, l:40, r:0 },
+                                      margin: { t:0, b:0, l:30, r:0 },
                                       xaxis: { ticks:'', showline:false, showticklabels:false },
                                       yaxis: {  }
                                     }",
@@ -92,7 +94,7 @@ page(
                 ])
               ])
             ])
-          ], @recur("pkg in searchterms.map(p => p.toLowerCase())"))
+          ], @recur("pkg in searchterms.map(p => p.toLowerCase().trim())"))
         ], @iif(:searchterms))
 
         plot(:data, layout = :layout, config = "{ displayLogo:false, displayModeBar:false }")

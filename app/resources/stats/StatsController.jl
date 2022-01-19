@@ -9,7 +9,7 @@ using Genie.Router, Genie.Renderers.Json, Genie.Cache
 using SearchLight
 using Dates
 using Humanize
-
+using PkgVizBoard
 
 function __init__()
   Cache.init()
@@ -18,7 +18,7 @@ end
 
 function inputs()
   packages = split(params(:packages, ""), ',', keepempty = false)
-  regions = split(params(:regions, Dashboard.ALL_REGIONS), ',', keepempty = false)
+  regions = split(params(:regions, PkgVizBoard.ALL_REGIONS), ',', keepempty = false)
   startdate = Dates.format(params(:startdate, today() - Month(1)) |> Date, "yyyy-mm-dd")
   enddate = Dates.format(params(:enddate, today()) |> Date, "yyyy-mm-dd")
 
@@ -45,7 +45,7 @@ end
 
 
 function regions()
-  (:regions => Dashboard.REGIONS) |> json
+  (:regions => PkgVizBoard.REGIONS) |> json
 end
 
 
@@ -75,6 +75,7 @@ function parseoptions(options)
   result
 end
 
+const oldest_date_in_db = Date("2021-09-01")
 
 function badge()
   packages, regions, startdate, enddate = inputs()
@@ -88,7 +89,7 @@ function badge()
 
   package = packages[1]
   withcache(string(package, label, sep, color, logo), 24 * 60 * 60) do # 24h cache
-    data = stats([package], [Dashboard.ALL_REGIONS], Date("2021-09-01"), today) |> first
+    data = stats([package], [PkgVizBoard.ALL_REGIONS], oldest_date_in_db, today) |> first
     total = data[package] |> values |> collect |> sum
 
     Dict(

@@ -9,18 +9,24 @@ RUN mkdir /home/genie/app
 COPY . /home/genie/app
 WORKDIR /home/genie/app
 
+# C compiler for PackageCompiler
+RUN apt-get update && apt-get install -y gcc
+
 # configure permissions
 RUN chown genie:genie -R *
-
-RUN chmod +x bin/repl
-RUN chmod +x bin/server
-RUN chmod +x bin/runtask
 
 # switch user
 USER genie
 
 # instantiate Julia packages
-RUN julia -e "using Pkg; Pkg.activate(\".\"); Pkg.instantiate(); Pkg.precompile(); "
+RUN julia -e "using Pkg; Pkg.activate(\".\"); Pkg.instantiate()"
+
+# Compile app
+RUN julia --project compiled/make.jl
+
+RUN chmod +x bin/repl
+RUN chmod +x bin/server
+RUN chmod +x bin/runtask
 
 # ports
 EXPOSE 8000
