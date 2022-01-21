@@ -23,5 +23,6 @@ PackageCompiler.create_sysimage(
     "TOML"
   ],
   sysimage_path = "compiled/sysimg.so",
-  precompile_execution_file = "compiled/precompile.jl"
+  precompile_execution_file = "compiled/precompile.jl",
+  cpu_target = PackageCompiler.default_app_cpu_target()
 )

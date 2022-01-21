@@ -7,7 +7,6 @@ using SearchLight, SearchLightSQLite
 using Packages
 using OrderedCollections
 using DataFrames, GLM
-using PkgVizBoard
 
 const max_search_items = 6
 const request_params = Dict{ChannelName,Dict{Symbol,String}}()
@@ -97,8 +96,8 @@ function handlers(model)
   end
 
   onany(model.filter_startdate, model.filter_enddate, model.filter_regions, model.interval) do st, ed, reg, _
-    isempty(reg) && (model.filter_regions[] = [PkgVizBoard.ALL_REGIONS])
-    length(reg) > 1 && in(PkgVizBoard.ALL_REGIONS, reg) && (model.filter_regions[] = filter(x->x!=PkgVizBoard.ALL_REGIONS, reg))
+    isempty(reg) && (model.filter_regions[] = [ALL_REGIONS])
+    length(reg) > 1 && in(ALL_REGIONS, reg) && (model.filter_regions[] = filter(x->x!=ALL_REGIONS, reg))
 
     model.isprocessing[] = true
   end
@@ -132,6 +131,13 @@ end
 
 #== reactive model ==#
 
+const ALL_REGIONS = "all"
+const REGIONS = String[ALL_REGIONS, "au", "cn-east", "cn-northeast", "cn-southeast", "eu-central", "in", "kr", "sa", "sg", "us-east", "us-west"]
+
+const DAY = "day"
+const MONTH = "month"
+const YEAR = "year"
+
 export Model
 
 @reactive mutable struct Model <: ReactiveModel
@@ -142,14 +148,14 @@ export Model
   filter_startdate::R{Date} = Dates.today() - Dates.Month(3)
   filter_enddate::R{Date} = Dates.today() - Dates.Day(1)
 
-  regions::Vector{String} = PkgVizBoard.REGIONS
-  filter_regions::R{Vector{String}} = String[PkgVizBoard.ALL_REGIONS]
+  regions::Vector{String} = REGIONS
+  filter_regions::R{Vector{String}} = String[ALL_REGIONS]
 
-  interval::R{String} = PkgVizBoard.DAY
+  interval::R{String} = DAY
 
   # data for plot
   data::R{Vector{PlotData}} = []
-  layout::PlotLayout = PlotLayout(plot_bgcolor = "#fff", margin_t = 20, margin_b = 40, margin_l = 62, margin_r = 62)
+  layout::R{PlotLayout} = PlotLayout(plot_bgcolor = "#fff")
 
   # downloads totals
   totals::R{Dict{String,Int}} = Dict{String,Int}()
@@ -160,7 +166,7 @@ end
 
 
 function factory()
-  model = init(Model) |> handlers
+  model = Model |> init |> handlers
   isempty(getpayload()) || (request_params[getchannel(model)] = getpayload())
 
   model

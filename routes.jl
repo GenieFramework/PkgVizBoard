@@ -1,15 +1,6 @@
 using DashboardController, StatsController
 using Genie, Stipple, StippleUI, StipplePlotly
 
-#= consts =#
-
-const ALL_REGIONS = "all"
-const REGIONS = String[ALL_REGIONS, "au", "cn-east", "cn-northeast", "cn-southeast", "eu-central", "in", "kr", "sa", "sg", "us-east", "us-west"]
-
-const DAY = "day"
-const MONTH = "month"
-const YEAR = "year"
-
 #=== config ==#
 
 if Genie.Configuration.isprod()
