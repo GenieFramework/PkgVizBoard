@@ -10,7 +10,7 @@ COPY . /home/genie/app
 WORKDIR /home/genie/app
 
 # C compiler for PackageCompiler
-RUN apt-get update && apt-get install -y g++
+# RUN apt-get update && apt-get install -y g++
 
 # configure permissions
 RUN chown genie:genie -R *
@@ -22,7 +22,7 @@ USER genie
 RUN julia -e "using Pkg; Pkg.activate(\".\"); Pkg.instantiate(); Pkg.precompile();"
 
 # Compile app
-RUN julia --project compiled/make.jl
+# RUN julia --project compiled/make.jl
 
 RUN chmod +x bin/repl
 RUN chmod +x bin/server

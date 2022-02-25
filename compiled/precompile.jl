@@ -1,6 +1,8 @@
 using Genie
 Genie.loadapp(pwd())
 
+import HTTP
+
 @info "Hitting routes"
 params() # to force initialize the params collection
 Genie.Router.params!(:packages, "Genie,Stipple")
@@ -19,7 +21,6 @@ end
 
 try
   @info "Making requests"
-  import HTTP
   HTTP.request("GET", "http://localhost:8000/?packages=Genie,Stipple")
   HTTP.request("GET", "http://localhost:8000/api/v1/regions")
   HTTP.request("GET", "http://localhost:8000/api/v1/packages")

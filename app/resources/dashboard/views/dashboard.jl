@@ -91,8 +91,8 @@ page(
                           config = "{ displayModeBar:false }")
                 ])
               ])
-            ])
-          ], @recur("pkg in searchterms.map(p => p.toLowerCase())"))
+            ], @iif("totals[pkg]"))
+          ], @recur("pkg in searchterms.map(p => p.toLowerCase())"), key! = "pkg")
         ], @iif(:searchterms))
 
         plot(:data, layout = :layout, config = "{ displayLogo:false, displayModeBar:false }")

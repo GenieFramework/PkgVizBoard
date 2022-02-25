@@ -8,10 +8,10 @@ function up()
       primary_key()
       column(:package_uuid, :string, limit = 100)
       column(:package_name, :string, limit = 100)
-      column(:status, :integer, limit = 4)
+      column(:status, :integer)
       column(:region, :string, limit = 20)
-      column(:date, :string, limit = 100)  # check for date format # unix time stamp 
-      column(:request_count, :integer, limit = 20)
+      column(:date, :string, limit = 100)  # check for date format # unix time stamp
+      column(:request_count, :integer)
     ]
   end
 
