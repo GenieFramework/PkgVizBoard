@@ -7,6 +7,7 @@ using SearchLight, SearchLightSQLite
 using Packages
 using OrderedCollections
 using DataFrames, GLM
+using PackagesController
 
 const max_search_items = 6
 const request_params = Dict{ChannelName,Dict{Symbol,String}}()
@@ -126,6 +127,21 @@ function handlers(model)
     end
   end
 
+  on(model.sfilter) do filter
+    @info "Filter function running"
+    if isempty(filter)
+      model.packages[] = PackagesController.packagenames()
+    elseif length(filter) > 2
+      for i in model.packages[]
+        finaloutput = []
+        if !isnothing(findfirst(lowercase(filter), lowercase(i)))
+        push!(finaloutput, i)
+        end
+      end
+      model.packages[] = finaloutput
+    end
+  end
+
   model
 end
 
@@ -143,7 +159,11 @@ export Model
 @reactive mutable struct Model <: ReactiveModel
   # filter UI
   searchterms::R{Vector{String}} = String[]
-  packages::Vector{String} = []
+  
+  # select field 
+  packages::Vector{String} = PackagesController.packagenames()
+  sfilter::R{String} = ""
+  # select field
 
   filter_startdate::R{Date} = Dates.today() - Dates.Month(3)
   filter_enddate::R{Date} = Dates.today() - Dates.Day(1)
@@ -163,6 +183,15 @@ export Model
   # trendlines
   trends::R{Dict{String,Vector{PlotData}}} = Dict{String,Vector{PlotData}}()
 end
+
+js_methods(::Model) = """
+    filterFn (val, update, abort) {
+        console.log('Filtering started!')
+        update(() => {
+            this.sfilter = val
+        })
+    }
+"""
 
 
 function factory()

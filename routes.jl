@@ -1,4 +1,4 @@
-using DashboardController, StatsController
+using DashboardController, StatsController, PackagesController
 using Genie, Stipple, StippleUI, StipplePlotly
 
 #=== config ==#
@@ -18,3 +18,4 @@ route("/api/v1/packages", StatsController.API.V1.packages, method = GET)
 [route("/api/v1/stats", StatsController.API.V1.search, method = m) for m in [GET, POST]]
 route("/api/v1/badge/:packages", StatsController.API.V1.badge, method = GET)
 route("/api/v1/badge/:packages/:options", StatsController.API.V1.badge, method = GET, named = :get_api_v1_badge_packages_options)
+# route("/assets/js/packages.js", PackagesController.packagenames, method = GET)
