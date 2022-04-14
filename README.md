@@ -27,3 +27,8 @@ PkgVizBoard $ bin/server
 ```
 
 Visit http://localhost:8080/
+
+### Swagger/OpenAPI support powered by [SwagUI](https://github.com/GenieFramework/SwagUI.jl) 
+_thanks 🙏 @jiachengzhang1_
+
+![swagui](_content/swagger.gif)
