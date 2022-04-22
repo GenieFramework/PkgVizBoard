@@ -156,19 +156,16 @@ route("/api/v1/badge/:packages", StatsController.API.V1.badge, method = GET)
 """
 route("/api/v1/badge/:packages/:options", StatsController.API.V1.badge, method = GET, named = :get_api_v1_badge_packages_options)
 
-# build a swagger document from markdown
-info = Dict{String, Any}()
-info["title"] = "PkgVizBoard API"
-info["version"] = "1.0.5"
-openApi = OpenAPI("3.0", info)
-swagger_document = build(openApi)
-
-options = Options(
-  custom_favicon="/favicon.ico", 
-  custom_site_title="Package download stats for Julia - Swagger",
-  show_explorer=false
+rs() = render_swagger(
+  build(
+    OpenAPI("3.0", info),
+    Dict("title" => "PkgVizBoard API", "version" => "1.0.5")
+  ),
+  options = Options(
+    custom_favicon = "/favicon.ico",
+    custom_site_title = "Package download stats for Julia - Swagger",
+    show_explorer = false
+  )
 )
 
-route("/docs") do 
-    render_swagger(swagger_document, options=options)
-end
+route("/docs", rs)
