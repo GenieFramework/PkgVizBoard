@@ -19,7 +19,7 @@ Base.@kwdef mutable struct Stat <: AbstractModel
 end
 
 
-function intervalgroup(groupinterval)
+function intervalgroup(groupinterval) :: String
   groupinterval in [PkgVizBoard.DAY, PkgVizBoard.MONTH, PkgVizBoard.YEAR] ||
     (groupinterval = PkgVizBoard.DAY)
 
@@ -35,8 +35,8 @@ function intervalgroup(groupinterval)
 end
 
 
-function search(pkg_names, regions, startdate, enddate, groupinterval = PkgVizBoard.DAY)
-  isempty(pkg_names) || isempty(regions) && return
+function search(pkg_names, regions, startdate, enddate, groupinterval = PkgVizBoard.DAY) :: Vector{Stat}
+  (isempty(pkg_names) || isempty(regions)) && return Stat[]
 
   pkg_names = map(pkg_names) do pkg
       (endswith(pkg, ".jl") ? pkg[1:end-3] : pkg) |> lowercase
@@ -54,7 +54,7 @@ function search(pkg_names, regions, startdate, enddate, groupinterval = PkgVizBo
                                   where = where_filters, order = ["stats.date"], group = ["stats.package_name", intervalgroup(groupinterval)]))
 end
 
-function search(model)
+function search(model) :: Vector{Stat}
   search(model.searchterms[], model.filter_regions[], model.filter_startdate[], model.filter_enddate[], model.interval[])
 end
 

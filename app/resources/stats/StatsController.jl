@@ -4,9 +4,11 @@ module API
 
 module V1
 
+using PkgVizBoard
 using PkgVizBoard.Dashboard
 using PkgVizBoard.Packages
 using PkgVizBoard.Stats
+
 using Genie.Router, Genie.Renderers.Json
 using GenieCache, GenieCacheFileCache
 using SearchLight
@@ -16,7 +18,7 @@ using Humanize
 
 function inputs()
   packages = split(params(:packages, ""), ',', keepempty = false)
-  regions = split(params(:regions, PkgVizBoard.Dashboard.ALL_REGIONS), ',', keepempty = false)
+  regions = split(params(:regions, PkgVizBoard.ALL_REGIONS), ',', keepempty = false)
   startdate = Dates.format(params(:startdate, today() - Month(1)) |> Date, "yyyy-mm-dd")
   enddate = Dates.format(params(:enddate, today()) |> Date, "yyyy-mm-dd")
 
@@ -43,7 +45,7 @@ end
 
 
 function regions()
-  (:regions => PkgVizBoard.Dashboard.REGIONS) |> json
+  (:regions => PkgVizBoard.REGIONS) |> json
 end
 
 
@@ -86,7 +88,7 @@ function badge()
 
   package = packages[1]
   withcache(string(package, label, sep, color, logo), 24 * 60 * 60) do # 24h cache
-    data = stats([package], [PkgVizBoard.Dashboard.ALL_REGIONS], Date("2021-09-01"), today) |> first
+    data = stats([package], [PkgVizBoard.ALL_REGIONS], Date("2021-09-01"), today) |> first
     total = data[package] |> values |> collect |> sum
 
     Dict(

@@ -16,6 +16,7 @@ const request_params = Dict{ChannelName,Dict{Symbol,String}}()
 
 function stats(r_stats)
   stats = OrderedDict{String,OrderedDict{Date,Int}}()
+  isnothing(r_stats) && return stats
 
   for r_stat in r_stats
     haskey(stats, r_stat.package_name) || (stats[r_stat.package_name] = Dict{Date,Int}())
