@@ -2,10 +2,12 @@ module DashboardController
 
 using Genie, Stipple, StippleUI, StipplePlotly
 using Genie.Renderers.Html
-using Dashboard
+
+using PkgVizBoard
+using PkgVizBoard.Dashboard
 
 function dashboard()
-  html(:dashboard, "dashboard.jl", model = Dashboard.factory(), context = @__MODULE__)
+  html(:dashboard, "dashboard.jl", model = PkgVizBoard.Dashboard.factory(), context = @__MODULE__)
 end
 
 end

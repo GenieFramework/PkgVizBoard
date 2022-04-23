@@ -32,7 +32,7 @@ end
 
 try
   @info "Stopping server"
-  Genie.AppServer.down!()
+  Genie.Server.down!()
 catch
 end
 

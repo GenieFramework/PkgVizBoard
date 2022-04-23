@@ -1,8 +1,8 @@
 module Stats
 
 using SearchLight
-using Dashboard
 using Dates
+using PkgVizBoard
 
 export Stat
 
@@ -20,13 +20,14 @@ end
 
 
 function intervalgroup(groupinterval)
-  groupinterval in [Dashboard.DAY, Dashboard.MONTH, Dashboard.YEAR] || (groupinterval = Dashboard.DAY)
+  groupinterval in [PkgVizBoard.DAY, PkgVizBoard.MONTH, PkgVizBoard.YEAR] ||
+    (groupinterval = PkgVizBoard.DAY)
 
-  if groupinterval == Dashboard.DAY
+  if groupinterval == PkgVizBoard.DAY
     "stats.date"
-  elseif groupinterval == Dashboard.MONTH
+  elseif groupinterval == PkgVizBoard.MONTH
     "stats.month"
-  elseif groupinterval == Dashboard.YEAR
+  elseif groupinterval == PkgVizBoard.YEAR
     "stats.year"
   else
     error("invalid group interval")
@@ -34,7 +35,7 @@ function intervalgroup(groupinterval)
 end
 
 
-function search(pkg_names, regions, startdate, enddate, groupinterval = Dashboard.DAY)
+function search(pkg_names, regions, startdate, enddate, groupinterval = PkgVizBoard.DAY)
   isempty(pkg_names) || isempty(regions) && return
 
   pkg_names = map(pkg_names) do pkg
@@ -46,7 +47,7 @@ function search(pkg_names, regions, startdate, enddate, groupinterval = Dashboar
       SQLWhereExpression("date >= ? AND date <= ?", startdate, enddate)
   ]
 
-  Dashboard.ALL_REGIONS in regions ||
+  PkgVizBoard.ALL_REGIONS in regions ||
     push!(where_filters, SQLWhereExpression("region IN ( $(repeat("?,", length(regions))[1:end-1] ) )", regions))
 
   SearchLight.find(Stat, SQLQuery(columns = SQLColumns(Stat, (request_count = SQLColumn("SUM(stats.request_count) AS stats_request_count", raw = true),) ),

@@ -2,8 +2,11 @@ module S3DBTask
 
 using Genie
 using GZip, CSV, Dates
-using SearchLight, SearchLightSQLite, Stats, Packages
+using SearchLight, SearchLightSQLite
 using Logging
+
+using ..PkgVizBoard.Packages
+using ..PkgVizBoard.Stats
 
 SearchLight.config.log_level = Logging.Error
 

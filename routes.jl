@@ -1,6 +1,15 @@
-using DashboardController, StatsController
+using PkgVizBoard.DashboardController, PkgVizBoard.StatsController
 using Genie, Stipple, StippleUI, StipplePlotly
 using SwagUI, SwaggerMarkdown
+
+#=== constants ==#
+
+const ALL_REGIONS = "all"
+const REGIONS = String[ALL_REGIONS, "au", "cn-east", "cn-northeast", "cn-southeast", "eu-central", "in", "kr", "sa", "sg", "us-east", "us-west"]
+
+const DAY = "day"
+const MONTH = "month"
+const YEAR = "year"
 
 #=== config ==#
 
@@ -12,7 +21,7 @@ end
 
 #== server ==#
 
-route("/", DashboardController.dashboard)
+route("/", PkgVizBoard.DashboardController.dashboard)
 
 @swagger """
 /api/v1/regions:
@@ -23,7 +32,7 @@ route("/", DashboardController.dashboard)
       '200':
         description: Returns a JSON object with all the regions
 """
-route("/api/v1/regions", StatsController.API.V1.regions, method = GET)
+route("/api/v1/regions", PkgVizBoard.StatsController.API.V1.regions, method = GET)
 
 @swagger """
 /api/v1/packages:
@@ -34,7 +43,7 @@ route("/api/v1/regions", StatsController.API.V1.regions, method = GET)
       '200':
         description: Returns a JSON object with all the packages
 """
-route("/api/v1/packages", StatsController.API.V1.packages, method = GET)
+route("/api/v1/packages", PkgVizBoard.StatsController.API.V1.packages, method = GET)
 
 @swagger """
 /api/v1/stats:
@@ -113,7 +122,7 @@ route("/api/v1/packages", StatsController.API.V1.packages, method = GET)
       '201':
         description: Returns a JSON object with all the download stats
 """
-[route("/api/v1/stats", StatsController.API.V1.search, method = m) for m in [GET, POST]]
+[route("/api/v1/stats", PkgVizBoard.StatsController.API.V1.search, method = m) for m in [GET, POST]]
 
 @swagger """
 /api/v1/badge/{packages}:
@@ -131,7 +140,7 @@ route("/api/v1/packages", StatsController.API.V1.packages, method = GET)
       '200':
         description: Returns a badge
 """
-route("/api/v1/badge/:packages", StatsController.API.V1.badge, method = GET)
+route("/api/v1/badge/:packages", PkgVizBoard.StatsController.API.V1.badge, method = GET)
 
 @swagger """
 /api/v1/badge/{packages}/{options}:
@@ -154,7 +163,7 @@ route("/api/v1/badge/:packages", StatsController.API.V1.badge, method = GET)
       '200':
         description: Returns a badge
 """
-route("/api/v1/badge/:packages/:options", StatsController.API.V1.badge, method = GET, named = :get_api_v1_badge_packages_options)
+route("/api/v1/badge/:packages/:options", PkgVizBoard.StatsController.API.V1.badge, method = GET, named = :get_api_v1_badge_packages_options)
 
 rs() = render_swagger(
   build(

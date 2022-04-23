@@ -1,6 +1,6 @@
-using Genie.Configuration, Logging
+using Genie, Logging
 
-const config = Settings(
+Genie.Configuration.config!(
   server_port                     = 8000,
   server_host                     = "0.0.0.0",
   log_level                       = Logging.Error,
@@ -12,7 +12,7 @@ const config = Settings(
   cors_allowed_origins            = ["*"],
 )
 
-if config.server_handle_static_files
+if Genie.config.server_handle_static_files
   @warn("For performance reasons Genie should not serve static files (.css, .js, .jpg, .png, etc) in production.
          It is recommended to set up Apache or Nginx as a reverse proxy and cache to serve static assets.")
 end
