@@ -5,8 +5,9 @@ using GZip, CSV, Dates
 using SearchLight, SearchLightSQLite
 using Logging
 
-using ..PkgVizBoard.Packages
-using ..PkgVizBoard.Stats
+using PkgVizBoard
+using PkgVizBoard.Packages
+using PkgVizBoard.Stats
 
 SearchLight.config.log_level = Logging.Error
 
