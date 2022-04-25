@@ -17,8 +17,8 @@ using Humanize
 
 
 function inputs()
-  packages = split(params(:packages, ""), ',', keepempty = false)
-  regions = split(params(:regions, PkgVizBoard.ALL_REGIONS), ',', keepempty = false)
+  packages = split(params(:packages, ""), ',', keepempty = false) |> sort!
+  regions = split(params(:regions, PkgVizBoard.ALL_REGIONS), ',', keepempty = false) |> sort!
   startdate = Dates.format(params(:startdate, today() - Month(1)) |> Date, "yyyy-mm-dd")
   enddate = Dates.format(params(:enddate, today()) |> Date, "yyyy-mm-dd")
 
@@ -32,15 +32,17 @@ stats(args...) = PkgVizBoard.Dashboard.stats(PkgVizBoard.Stats.search(args...))
 function search()
   packages, regions, startdate, enddate = inputs()
 
-  (:stats => Dict(
-    :request => Dict(
-      :packages => packages,
-      :regions => regions,
-      :startdate => startdate,
-      :enddate => enddate
-    ),
-    :response => stats(packages, regions, startdate, enddate)
-  )) |> json
+  withcache(string(join(packages), join(regions), startdate, enddate), 24 * 60 * 60) do # 24h cache
+    (:stats => Dict(
+      :request => Dict(
+        :packages => packages,
+        :regions => regions,
+        :startdate => startdate,
+        :enddate => enddate
+      ),
+      :response => stats(packages, regions, startdate, enddate)
+    )) |> json
+  end
 end
 
 

@@ -96,7 +96,7 @@ page(
         ], @iif(:searchterms))
 
         plot(:data, layout = :layout, config = "{ displayLogo:false, displayModeBar:false }")
-      ])
+      ], @iif("searchterms.length > 0"))
     ])
   ], @iif(:isready)
 )

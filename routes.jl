@@ -23,7 +23,7 @@ end
 
 route("/", PkgVizBoard.DashboardController.dashboard)
 
-@swagger """
+swagger"""
 /api/v1/regions:
   get:
     summary: Get regions
@@ -34,7 +34,7 @@ route("/", PkgVizBoard.DashboardController.dashboard)
 """
 route("/api/v1/regions", PkgVizBoard.StatsController.API.V1.regions, method = GET)
 
-@swagger """
+swagger"""
 /api/v1/packages:
   get:
     summary: Get the list of packages
@@ -45,7 +45,7 @@ route("/api/v1/regions", PkgVizBoard.StatsController.API.V1.regions, method = GE
 """
 route("/api/v1/packages", PkgVizBoard.StatsController.API.V1.packages, method = GET)
 
-@swagger """
+swagger"""
 /api/v1/stats:
   get:
     summary: Query the download stats
@@ -124,7 +124,7 @@ route("/api/v1/packages", PkgVizBoard.StatsController.API.V1.packages, method = 
 """
 [route("/api/v1/stats", PkgVizBoard.StatsController.API.V1.search, method = m) for m in [GET, POST]]
 
-@swagger """
+swagger"""
 /api/v1/badge/{packages}:
   get:
     summary: Get badge
@@ -142,7 +142,7 @@ route("/api/v1/packages", PkgVizBoard.StatsController.API.V1.packages, method = 
 """
 route("/api/v1/badge/:packages", PkgVizBoard.StatsController.API.V1.badge, method = GET)
 
-@swagger """
+swagger"""
 /api/v1/badge/{packages}/{options}:
   get:
     summary: Get badge
@@ -165,16 +165,18 @@ route("/api/v1/badge/:packages", PkgVizBoard.StatsController.API.V1.badge, metho
 """
 route("/api/v1/badge/:packages/:options", PkgVizBoard.StatsController.API.V1.badge, method = GET, named = :get_api_v1_badge_packages_options)
 
-rs() = render_swagger(
-  build(
-    OpenAPI("3.0", info),
-    Dict("title" => "PkgVizBoard API", "version" => "1.0.5")
-  ),
-  options = Options(
-    custom_favicon = "/favicon.ico",
-    custom_site_title = "Package download stats for Julia - Swagger",
-    show_explorer = false
+route("/docs") do
+  render_swagger(
+    build(
+      OpenAPI("3.0",
+              Dict( "title" => "PkgVizBoard API",
+                    "version" => "1.0.5")
+              )
+    ),
+    options = Options(
+      custom_favicon = "/favicon.ico",
+      custom_site_title = "Package download stats for Julia - Swagger",
+      show_explorer = false
+    )
   )
-)
-
-route("/docs", rs)
+end

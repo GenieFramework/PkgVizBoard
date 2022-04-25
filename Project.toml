@@ -1,7 +1,7 @@
 name = "PkgVizBoard"
 uuid = "b3c4da3f-fc86-4067-8f3c-06e3ed709052"
 authors = ["Genie Framework Team // genieframework.com"]
-version = "1.6.0"
+version = "1.7.0"
 
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
