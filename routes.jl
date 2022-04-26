@@ -158,8 +158,7 @@ route("/api/v1/badge/:packages/:options", StatsController.API.V1.badge, method =
 
 rs() = render_swagger(
   build(
-    OpenAPI("3.0", info),
-    Dict("title" => "PkgVizBoard API", "version" => "1.0.5")
+    OpenAPI("3.0", Dict("title" => "", "version" => "1.0.5")),
   ),
   options = Options(
     custom_favicon = "/favicon.ico",
