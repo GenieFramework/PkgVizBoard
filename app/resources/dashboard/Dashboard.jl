@@ -132,7 +132,7 @@ end
 #== reactive model ==#
 
 const ALL_REGIONS = "all"
-const REGIONS = String[ALL_REGIONS, "au", "cn-east", "cn-northeast", "cn-southeast", "eu-central", "in", "kr", "sa", "sg", "us-east", "us-west"]
+const REGIONS = String[ALL_REGIONS, "au", "jp", "cn-east", "cn-northeast", "cn-southeast", "eu-central", "in", "kr", "sa", "sg", "us-east", "us-west"]
 
 const DAY = "day"
 const MONTH = "month"
