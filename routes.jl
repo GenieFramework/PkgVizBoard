@@ -5,7 +5,7 @@ using SwagUI, SwaggerMarkdown
 #=== constants ==#
 
 const ALL_REGIONS = "all"
-const REGIONS = String[ALL_REGIONS, "au", "cn-east", "cn-northeast", "cn-southeast", "eu-central", "in", "kr", "sa", "sg", "us-east", "us-west"]
+const REGIONS = String[ALL_REGIONS, "au", "cn-east", "cn-northeast", "cn-southeast", "eu-central", "in", "jp", "kr", "sa", "sg", "us-east", "us-west"]
 
 const DAY = "day"
 const MONTH = "month"
@@ -14,9 +14,7 @@ const YEAR = "year"
 #=== config ==#
 
 if Genie.Configuration.isprod()
-  for m in [Genie, Stipple, StippleUI, StipplePlotly]
-    m.assets_config.host = "https://cdn.statically.io/gh/GenieFramework"
-  end
+  Genie.Assets.assets_config!([Genie, Stipple, StippleUI, StipplePlotly], host = "https://cdn.statically.io/gh/GenieFramework")
 end
 
 #== server ==#

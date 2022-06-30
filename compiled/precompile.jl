@@ -1,10 +1,18 @@
 using Genie
 Genie.loadapp(pwd())
 
+include("packages.jl")
+using PrecompileSignatures
+
+for p in PACKAGES
+  @show "Precompiling signatures for $p"
+  Core.eval(@__MODULE__, Meta.parse("import $p"))
+  Core.eval(@__MODULE__, Meta.parse("@precompile_signatures($p)"))
+end
+
 import HTTP
 
 @info "Hitting routes"
-params() # to force initialize the params collection
 Genie.Router.params!(:packages, "Genie,Stipple")
 for r in Genie.Router.routes()
   try
@@ -13,20 +21,22 @@ for r in Genie.Router.routes()
   end
 end
 
+const PORT = 50515
+
 try
   @info "Starting server"
-  up()
+  up(PORT)
 catch
 end
 
 try
   @info "Making requests"
-  HTTP.request("GET", "http://localhost:8000/?packages=Genie,Stipple")
-  HTTP.request("GET", "http://localhost:8000/api/v1/regions")
-  HTTP.request("GET", "http://localhost:8000/api/v1/packages")
-  HTTP.request("GET", "http://localhost:8000/api/v1/stats?packages=Genie,Stipple")
-  HTTP.request("GET", "http://localhost:8000/api/v1/badge/Genie")
-  HTTP.request("GET", "http://localhost:8000/api/v1/badge/Genie/color:blue")
+  @time HTTP.request("GET", "http://localhost:$PORT/?packages=Genie,Stipple")
+  @time HTTP.request("GET", "http://localhost:$PORT/api/v1/regions")
+  @time HTTP.request("GET", "http://localhost:$PORT/api/v1/packages")
+  @time HTTP.request("GET", "http://localhost:$PORT/api/v1/stats?packages=Genie,Stipple")
+  @time HTTP.request("GET", "http://localhost:$PORT/api/v1/badge/Genie")
+  @time HTTP.request("GET", "http://localhost:$PORT/api/v1/badge/Genie/color:blue")
 catch
 end
 

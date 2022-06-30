@@ -10,6 +10,7 @@ Genie.Configuration.config!(
   format_julia_builds             = false,
   format_html_output              = false,
   cors_allowed_origins            = ["*"],
+  base_path                       = "",
 )
 
 if Genie.config.server_handle_static_files

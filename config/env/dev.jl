@@ -8,7 +8,9 @@ Genie.Configuration.config!(
   server_handle_static_files      = true,
   path_build                      = "build",
   format_julia_builds             = false,
-  format_html_output              = true
+  format_html_output              = true,
+  cors_allowed_origins            = ["*"],
+  base_path                       = "",
 )
 
 ENV["JULIA_REVISE"] = "auto"

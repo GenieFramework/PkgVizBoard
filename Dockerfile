@@ -24,6 +24,9 @@ RUN julia -e "using Pkg; Pkg.activate(\".\"); Pkg.instantiate(); Pkg.precompile(
 # Compile app
 RUN julia --project compiled/make.jl
 
+# Precompile signatures
+# RUN julia --project compiled/precompile.jl
+
 RUN chmod +x bin/repl
 RUN chmod +x bin/server
 RUN chmod +x bin/runtask
