@@ -1,1 +1,1 @@
-julia --color=yes --depwarn=no --project=@. -Jcompiled/sysimg.so -q -i -- "%~dp0..\bootstrap.jl" s %*
+julia --color=yes --depwarn=no --project=@. -Jcompiled/sysimg.so -q -i -- "%~dp0..\bootstrap.jl" -s %*
