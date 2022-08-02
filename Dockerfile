@@ -13,7 +13,7 @@ WORKDIR /home/genie/app
 RUN apt-get update && apt-get install -y g++
 
 # configure permissions
-RUN chown genie:genie -R *
+RUN chown -R genie:genie /home/
 
 # switch user
 USER genie
