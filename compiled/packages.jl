@@ -9,8 +9,6 @@ const PACKAGES = [
   "Genie",
   "GenieCache",
   "GenieCacheFileCache",
-  "GenieSession",
-  "GenieSessionFileSession",
   "HTTP",
   "Humanize",
   "Inflector",
