@@ -1,27 +1,9 @@
 using PackageCompiler
 
+include("packages.jl")
+
 PackageCompiler.create_sysimage(
-  [
-    "CSV",
-    "DataFrames",
-    "Dates",
-    "FileIO",
-    "GLM",
-    "GZip",
-    "Genie",
-    "HTTP",
-    "Humanize",
-    "Inflector",
-    "Logging",
-    "LoggingExtras",
-    "OrderedCollections",
-    "SearchLight",
-    "SearchLightSQLite",
-    # "Stipple",
-    # "StipplePlotly",
-    # "StippleUI",
-    "TOML"
-  ],
+  PACKAGES,
   sysimage_path = "compiled/sysimg.so",
   precompile_execution_file = "compiled/precompile.jl",
   cpu_target = PackageCompiler.default_app_cpu_target()

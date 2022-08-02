@@ -1,5 +1,5 @@
 # pull latest julia image
-FROM --platform=linux/amd64 julia:latest
+FROM --platform=linux/amd64 julia:1.8.0-beta3
 
 # create dedicated user
 RUN useradd --create-home --shell /bin/bash genie
@@ -24,6 +24,9 @@ RUN julia -e "using Pkg; Pkg.activate(\".\"); Pkg.instantiate(); Pkg.precompile(
 # Compile app
 RUN julia --project compiled/make.jl
 
+# Precompile signatures
+# RUN julia --project compiled/precompile.jl
+
 RUN chmod +x bin/repl
 RUN chmod +x bin/server
 RUN chmod +x bin/runtask
@@ -34,8 +37,8 @@ EXPOSE 80
 
 # set up app environment
 ENV JULIA_DEPOT_PATH "/home/genie/.julia"
-ENV GENIE_ENV "dev"
-ENV HOST "0.0.0.0"
+ENV GENIE_ENV "prod"
+ENV GENIE_HOST "0.0.0.0"
 ENV PORT "8000"
 ENV WSPORT "8000"
 ENV EARLYBIND "true"

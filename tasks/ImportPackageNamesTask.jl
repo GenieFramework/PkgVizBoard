@@ -1,12 +1,12 @@
 module ImportPackageNamesTask
 
-using Packages
+import PkgVizBoard
 
 """
 Reads the package names from Julia's registry and imports them into the database.
 """
 function runtask()
-  Packages.insertnames()
+  PkgVizBoard.Packages.insertnames()
 end
 
 end

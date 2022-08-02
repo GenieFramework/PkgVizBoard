@@ -4,21 +4,21 @@ module API
 
 module V1
 
-using Dashboard, Packages, Stats
-using Genie.Router, Genie.Renderers.Json, Genie.Cache
+using PkgVizBoard
+using PkgVizBoard.Dashboard
+using PkgVizBoard.Packages
+using PkgVizBoard.Stats
+
+using Genie.Router, Genie.Renderers.Json
+using GenieCache, GenieCacheFileCache
 using SearchLight
 using Dates
 using Humanize
 
 
-function __init__()
-  Cache.init()
-end
-
-
 function inputs()
-  packages = split(params(:packages, ""), ',', keepempty = false)
-  regions = split(params(:regions, Dashboard.ALL_REGIONS), ',', keepempty = false)
+  packages = split(params(:packages, ""), ',', keepempty = false) |> sort!
+  regions = split(params(:regions, PkgVizBoard.ALL_REGIONS), ',', keepempty = false) |> sort!
   startdate = Dates.format(params(:startdate, today() - Month(1)) |> Date, "yyyy-mm-dd")
   enddate = Dates.format(params(:enddate, today()) |> Date, "yyyy-mm-dd")
 
@@ -26,26 +26,28 @@ function inputs()
 end
 
 
-stats(args...) = Dashboard.stats(Stats.search(args...))
+stats(args...) = PkgVizBoard.Dashboard.stats(PkgVizBoard.Stats.search(args...))
 
 
 function search()
   packages, regions, startdate, enddate = inputs()
 
-  (:stats => Dict(
-    :request => Dict(
-      :packages => packages,
-      :regions => regions,
-      :startdate => startdate,
-      :enddate => enddate
-    ),
-    :response => stats(packages, regions, startdate, enddate)
-  )) |> json
+  withcache(string(join(packages), join(regions), startdate, enddate), 24 * 60 * 60) do # 24h cache
+    (:stats => Dict(
+      :request => Dict(
+        :packages => packages,
+        :regions => regions,
+        :startdate => startdate,
+        :enddate => enddate
+      ),
+      :response => stats(packages, regions, startdate, enddate)
+    )) |> json
+  end
 end
 
 
 function regions()
-  (:regions => Dashboard.REGIONS) |> json
+  (:regions => PkgVizBoard.REGIONS) |> json
 end
 
 
@@ -88,7 +90,7 @@ function badge()
 
   package = packages[1]
   withcache(string(package, label, sep, color, logo), 24 * 60 * 60) do # 24h cache
-    data = stats([package], [Dashboard.ALL_REGIONS], Date("2021-09-01"), today) |> first
+    data = stats([package], [PkgVizBoard.ALL_REGIONS], Date("2021-09-01"), today) |> first
     total = data[package] |> values |> collect |> sum
 
     Dict(

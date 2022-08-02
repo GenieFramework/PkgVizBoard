@@ -32,6 +32,8 @@ Html.div(class="container", [
             <code>/api/v1/stats?regions=eu-central,us-west&packages=Genie,Stipple&startdate=2021-12-30&enddate=2022-01-15</code><br/>
           </li>
         </ul>")
+      p("You can also access the Swagger documentation for the API at <a style='color:black' href='/docs' target='_blank'>/docs</a>.
+          Many thanks to <a style='color:black' href='https://github.com/jiachengzhang1' target='_blank'>@jiachengzhang1</a> for creating `SwagUI.jl`.")
       p("<strong>Responsible use of the API is mandatory</strong>. We have not added any rate limiting or throttling.
           Please don't abuse the API or you'll ruin it for everybody.",
           style="padding-bottom: 20px;")

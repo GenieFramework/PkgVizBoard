@@ -2,17 +2,21 @@ module Dashboard
 
 using Stipple, StipplePlotly
 using Genie.Requests
-using Dates, Stats
+using Dates
 using SearchLight, SearchLightSQLite
-using Packages
 using OrderedCollections
 using DataFrames, GLM
+
+using PkgVizBoard
+include("../stats/Stats.jl")
+using .Stats
 
 const max_search_items = 6
 const request_params = Dict{ChannelName,Dict{Symbol,String}}()
 
 function stats(r_stats)
   stats = OrderedDict{String,OrderedDict{Date,Int}}()
+  isnothing(r_stats) && return stats
 
   for r_stat in r_stats
     haskey(stats, r_stat.package_name) || (stats[r_stat.package_name] = Dict{Date,Int}())
@@ -96,8 +100,8 @@ function handlers(model)
   end
 
   onany(model.filter_startdate, model.filter_enddate, model.filter_regions, model.interval) do st, ed, reg, _
-    isempty(reg) && (model.filter_regions[] = [ALL_REGIONS])
-    length(reg) > 1 && in(ALL_REGIONS, reg) && (model.filter_regions[] = filter(x->x!=ALL_REGIONS, reg))
+    isempty(reg) && (model.filter_regions[] = [PkgVizBoard.ALL_REGIONS])
+    length(reg) > 1 && in(PkgVizBoard.ALL_REGIONS, reg) && (model.filter_regions[] = filter(x->x!=PkgVizBoard.ALL_REGIONS, reg))
 
     model.isprocessing[] = true
   end
@@ -131,13 +135,6 @@ end
 
 #== reactive model ==#
 
-const ALL_REGIONS = "all"
-const REGIONS = String[ALL_REGIONS, "au", "cn-east", "cn-northeast", "cn-southeast", "eu-central", "in", "kr", "sa", "sg", "us-east", "us-west"]
-
-const DAY = "day"
-const MONTH = "month"
-const YEAR = "year"
-
 export Model
 
 @reactive mutable struct Model <: ReactiveModel
@@ -148,10 +145,10 @@ export Model
   filter_startdate::R{Date} = Dates.today() - Dates.Month(3)
   filter_enddate::R{Date} = Dates.today() - Dates.Day(1)
 
-  regions::Vector{String} = REGIONS
-  filter_regions::R{Vector{String}} = String[ALL_REGIONS]
+  regions::Vector{String} = PkgVizBoard.REGIONS
+  filter_regions::R{Vector{String}} = String[PkgVizBoard.ALL_REGIONS]
 
-  interval::R{String} = DAY
+  interval::R{String} = PkgVizBoard.DAY
 
   # data for plot
   data::R{Vector{PlotData}} = []
