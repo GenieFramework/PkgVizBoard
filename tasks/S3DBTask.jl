@@ -2,7 +2,7 @@ module S3DBTask
 
 using Genie
 using GZip, CSV, Dates
-using SearchLight, SearchLightSQLite
+using SearchLight
 using Logging
 
 using PkgVizBoard

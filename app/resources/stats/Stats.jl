@@ -51,7 +51,8 @@ function search(pkg_names, regions, startdate, enddate, groupinterval = PkgVizBo
     push!(where_filters, SQLWhereExpression("region IN ( $(repeat("?,", length(regions))[1:end-1] ) )", regions))
 
   SearchLight.find(Stat, SQLQuery(columns = SQLColumns(Stat, (request_count = SQLColumn("SUM(stats.request_count) AS stats_request_count", raw = true),) ),
-                                  where = where_filters, order = ["stats.date"], group = ["stats.package_name", intervalgroup(groupinterval)]))
+                                  where = where_filters, order = ["stats.date"],
+                                  group = ["stats.id", "stats.package_name", intervalgroup(groupinterval)]))
 end
 
 function search(model) :: Vector{Stat}

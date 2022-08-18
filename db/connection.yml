@@ -6,6 +6,6 @@ dev:
   config:
 
 prod:
-  adapter: SQLite
-  database: db/dev.sqlite
+  adapter: PostgreSQL
+  database: pkgvizdb
   config:

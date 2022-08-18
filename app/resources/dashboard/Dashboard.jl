@@ -3,7 +3,7 @@ module Dashboard
 using Stipple, StipplePlotly
 using Genie.Requests
 using Dates
-using SearchLight, SearchLightSQLite
+using SearchLight
 using OrderedCollections
 using DataFrames, GLM
 
