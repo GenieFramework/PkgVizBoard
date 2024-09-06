@@ -12,7 +12,7 @@ Base.@kwdef mutable struct Stat <: AbstractModel
   package_name::String = ""
   status::Int = 0
   region::String = ""
-  date::Date = ""
+  date::Date = Dates.today()
   request_count::Int = 0
   year::Int = 0
   month::String = ""
